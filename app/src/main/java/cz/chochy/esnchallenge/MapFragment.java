@@ -84,7 +84,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
 
         loadLocations();
-        addAllLocations();
+//        addAllLocations();
 
         buttonCheck.setVisibility(View.VISIBLE);
         buttonCheck.setOnClickListener(new View.OnClickListener() {
@@ -140,16 +140,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         locations.put(poruba.getTitle(),poruba);
         */
 
-        GsonRequest<LocationPoint> request = new GsonRequest<LocationPoint>(
+        GsonRequest<LocationPoint[]> request = new GsonRequest<LocationPoint[]>(
                 Request.Method.GET,
                 MainActivity.API_URL + "/api/location",
-                LocationPoint.class,
-                new Response.Listener<LocationPoint>() {
+                LocationPoint[].class,
+                new Response.Listener<LocationPoint[]>() {
                     @Override
-                    public void onResponse(LocationPoint response) {
+                    public void onResponse(LocationPoint[] response) {
                         Log.v("API", response.toString());
 
                         //TODO: save data
+                        for(LocationPoint location : response) {
+                            locations.put(location.getTitle(),location);
+                        }
+                        addAllLocations();
 
                         Toast.makeText(getActivity(),response.toString(),Toast.LENGTH_LONG).show();
                     }
