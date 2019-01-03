@@ -1,4 +1,4 @@
-package cz.chochy.esnchalange.model;
+package cz.chochy.esnchallenge.model;
 
 import android.location.Location;
 

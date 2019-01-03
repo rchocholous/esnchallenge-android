@@ -1,4 +1,4 @@
-package cz.chochy.esnchalange;
+package cz.chochy.esnchallenge;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

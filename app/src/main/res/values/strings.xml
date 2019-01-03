@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ESN Chalange</string>
+    <string name="app_name">ESN Challenge</string>
     <string name="title_highscores">High Scores</string>
     <string name="title_map">Map</string>
     <string name="title_profile">Profile</string>

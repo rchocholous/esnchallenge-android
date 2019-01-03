@@ -1,4 +1,4 @@
-package cz.chochy.esnchalange;
+package cz.chochy.esnchallenge;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

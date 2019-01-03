@@ -1,4 +1,4 @@
-package cz.chochy.esnchalange;
+package cz.chochy.esnchallenge;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -12,32 +12,36 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cz.chochy.esnchalange.model.LocationPoint;
+import cz.chochy.esnchallenge.model.LocationPoint;
+import cz.chochy.esnchallenge.tools.GsonRequest;
 
 /**
  * @author chochy
  * Date: 2019-01-02
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
+
+    private RequestQueue queue;
 
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
@@ -69,6 +73,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        queue = Volley.newRequestQueue(this.getActivity());
 
         buttonCheck = this.getActivity().findViewById(R.id.button_check);
     }
@@ -123,6 +129,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void loadLocations() {
+        /*
         LocationPoint zabovresky = new LocationPoint(1l,"Zabovresky", "District", 49.2136909999999971887518768198788166046142578125,  16.574813999999999936107997200451791286468505859375);
         locations.put(zabovresky.getTitle(),zabovresky);
 
@@ -131,5 +138,38 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         LocationPoint poruba = new LocationPoint(3l,"Poruba", "District", 49.8310344,18.1642107);
         locations.put(poruba.getTitle(),poruba);
+        */
+
+        GsonRequest<LocationPoint> request = new GsonRequest<LocationPoint>(
+                Request.Method.GET,
+                MainActivity.API_URL + "/api/location",
+                LocationPoint.class,
+                new Response.Listener<LocationPoint>() {
+                    @Override
+                    public void onResponse(LocationPoint response) {
+                        Log.v("API", response.toString());
+
+                        //TODO: save data
+
+                        Toast.makeText(getActivity(),response.toString(),Toast.LENGTH_LONG).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.v("API", error.toString());
+                        Toast.makeText(getActivity(),error.toString(),Toast.LENGTH_LONG).show();
+                    }
+                })
+        {
+            @Override
+            public Map<String, String> getHeaders() {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/x-www-form-urlencoded");
+                return headers;
+            }
+        };
+        queue.add(request);
+
     }
 }
