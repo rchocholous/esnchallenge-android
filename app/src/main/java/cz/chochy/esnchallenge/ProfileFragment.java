@@ -13,13 +13,16 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -70,17 +73,19 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("email", fieldEmail.getText().toString());
-                params.put("password", fieldPassword.getText().toString());
-
-                JsonObjectRequest request = new JsonObjectRequest(
+                StringRequest request = new StringRequest(
                         Request.Method.POST,
                         MainActivity.API_URL + "/api/auth",
-                        new JSONObject(params),
-                        new Response.Listener<JSONObject>() {
+                        new Response.Listener<String>() {
                             @Override
-                            public void onResponse(JSONObject response) {
+                            public void onResponse(String responseString) {
+                                JSONObject response = null;
+                                try {
+                                    response = new JSONObject(responseString);
+                                    ((MainActivity)getActivity()).setAccessToken(response.getString("access_token"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                                 Log.v("API", response.toString());
 
                                 //TODO: save data
@@ -99,10 +104,17 @@ public class ProfileFragment extends Fragment {
                         })
                 {
                     @Override
-                    public Map<String, String> getHeaders() {
+                    public Map<String, String> getHeaders() throws AuthFailureError {
                         HashMap<String, String> headers = new HashMap<String, String>();
                         headers.put("Content-Type", "application/x-www-form-urlencoded");
                         return headers;
+                    }
+                    @Override
+                    public Map<String, String> getParams() throws AuthFailureError {
+                        Map<String, String> params = new HashMap<String, String>();
+                        params.put("email", fieldEmail.getText().toString());
+                        params.put("password", fieldPassword.getText().toString());
+                        return params;
                     }
                 };
                 queue.add(request);

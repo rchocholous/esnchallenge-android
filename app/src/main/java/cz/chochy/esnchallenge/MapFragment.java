@@ -14,16 +14,21 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,6 +110,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                 locations.get(list.get(0).getTitle()).getCircle().setFillColor(0x7FA0A500);// Only if is inside range
 
+                locationCheck(list.get(0));
+
                 for(LocationPoint l : list) {
                     Log.v("SORTED",l.getTitle() + ", distance: " + l.distanceTo(actual));
                 }
@@ -175,5 +182,56 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         };
         queue.add(request);
 
+    }
+
+
+
+    private void locationCheck(final LocationPoint location) {
+        if(((MainActivity)getActivity()).getAccessToken() != null && !((MainActivity)getActivity()).getAccessToken().isEmpty()) {
+
+            StringRequest request = new StringRequest(
+                    Request.Method.POST,
+                    MainActivity.API_URL + "/api/location",
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String responseString) {
+                            JSONObject response = null;
+                            try {
+                                response = new JSONObject(responseString);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            Log.v("API", response.toString());
+
+                            //TODO: Do something
+                            Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Log.v("API", error.toString());
+                            Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                        }
+                    }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    HashMap<String, String> headers = new HashMap<String, String>();
+                    headers.put("X-Auth-Token", ((MainActivity) getActivity()).getAccessToken());
+                    return headers;
+                }
+
+                @Override
+                public Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<String, String>();
+                    params.put("location", String.valueOf(location.getId()));
+                    return params;
+                }
+            };
+            queue.add(request);
+
+        } else {
+            Toast.makeText(getActivity(), "Not logged in.", Toast.LENGTH_LONG).show();
+        }
     }
 }

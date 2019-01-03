@@ -11,6 +11,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     public static String API_URL = "https://fiesta.esncz.org";
 
+    public String accessToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,4 +57,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         return loadFragment(fragment);
     }
 
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
 }
