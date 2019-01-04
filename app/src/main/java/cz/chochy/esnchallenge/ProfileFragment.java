@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -28,6 +29,10 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import cz.chochy.esnchallenge.model.ProfileData;
+import cz.chochy.esnchallenge.model.University;
+import cz.chochy.esnchallenge.tools.GsonRequest;
+
 /**
  * @author chochy
  * Date: 2019-01-02
@@ -36,6 +41,7 @@ public class ProfileFragment extends Fragment {
 
     private Button buttonLogin, buttonLogout;
     private EditText fieldEmail, fieldPassword;
+    private TextView textName, textEmail, textFirstName, textLastName,  textGender, textUniversity, textSection;
     private LinearLayout layoutLogin, layoutProfile;
     private RequestQueue queue;
 
@@ -68,6 +74,13 @@ public class ProfileFragment extends Fragment {
         fieldEmail = this.getActivity().findViewById(R.id.edit_text_email);
         fieldPassword = this.getActivity().findViewById(R.id.edit_text_password);
 
+        textName = this.getActivity().findViewById(R.id.text_name);
+        textEmail = this.getActivity().findViewById(R.id.text_email);
+        textFirstName = this.getActivity().findViewById(R.id.text_firstname);
+        textLastName = this.getActivity().findViewById(R.id.text_lastname);
+        textGender = this.getActivity().findViewById(R.id.text_gender);
+        textUniversity = this.getActivity().findViewById(R.id.text_university);
+        textSection = this.getActivity().findViewById(R.id.text_section);
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +103,7 @@ public class ProfileFragment extends Fragment {
 
                                 //TODO: save data
 
+                                loadProfileData();
                                 layoutLogin.setVisibility(View.GONE);
                                 layoutProfile.setVisibility(View.VISIBLE);
                                 Toast.makeText(getActivity(),response.toString(),Toast.LENGTH_LONG).show();
@@ -131,5 +145,53 @@ public class ProfileFragment extends Fragment {
                 layoutProfile.setVisibility(View.GONE);
             }
         });
+    }
+
+    private void loadProfileData() {
+
+        GsonRequest<ProfileData> request = new GsonRequest<ProfileData>(
+                Request.Method.GET,
+                MainActivity.API_URL + "/api/profile",
+                ProfileData.class,
+                new Response.Listener<ProfileData>() {
+                    @Override
+                    public void onResponse(ProfileData response) {
+                        Log.v("API", response.toString());
+
+                        populateProfileData(response);
+
+                        Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.v("API", error.toString());
+                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("X-Auth-Token", ((MainActivity) getActivity()).getAccessToken());
+                return headers;
+            }
+        };
+        queue.add(request);
+
+    }
+
+    private void populateProfileData(ProfileData profile) {
+        if(profile != null) {
+            textName.setText(String.format("Howdy %s!", profile.getFirstname()));
+            textEmail.setText(profile.getEmail());
+            textFirstName.setText(profile.getFirstname());
+            textLastName.setText(profile.getLastname());
+            textGender.setText(profile.getGender());
+            if(profile.getUniversity() != null) {
+                textUniversity.setText(profile.getUniversity().getName());
+                textSection.setText(profile.getUniversity().getSectionShort());
+            }
+        }
     }
 }
