@@ -1,12 +1,16 @@
 package cz.chochy.esnchallenge;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,11 +25,15 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,14 +54,20 @@ import cz.chochy.esnchallenge.tools.GsonRequest;
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
+    private static final int DEFAULT_ZOOM = 15;
     private RequestQueue queue;
 
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
 
+    private FusedLocationProviderClient fusedLocationClient;
+    private boolean mLocationPermissionGranted;
+    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
+    private Location lastKnownLocation;
+
     private Button buttonCheck;
 
-    private Map<String,LocationPoint> locations;
+    private Map<String, LocationPoint> locations;
 
     @Nullable
     @Override
@@ -71,6 +85,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             transaction.replace(R.id.map, mapFragment).commit();
         }
         mapFragment.getMapAsync(this);
+
+        // Construct a FusedLocationProviderClient.
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
 
         return view;
     }
@@ -104,23 +122,111 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 Collections.sort(list, new Comparator<LocationPoint>() {
                     @Override
                     public int compare(LocationPoint o1, LocationPoint o2) {
-                        return (int)(o1.distanceTo(actual)-(o2.distanceTo(actual)));
+                        return (int) (o1.distanceTo(actual) - (o2.distanceTo(actual)));
                     }
                 });
 
-                locations.get(list.get(0).getTitle()).getCircle().setFillColor(0x7FA0A500);// Only if is inside range
+                if(list != null && !list.isEmpty()) {
+                    locations.get(list.get(0).getTitle()).getCircle().setFillColor(0x7FA0A500);// Only if is inside range
 
-                locationCheck(list.get(0));
+                    locationCheck(list.get(0));
+                }
 
-                for(LocationPoint l : list) {
-                    Log.v("SORTED",l.getTitle() + ", distance: " + l.distanceTo(actual));
+                for (LocationPoint l : list) {
+                    Log.v("SORTED", l.getTitle() + ", distance: " + l.distanceTo(actual));
                 }
             }
         });
 
-        LatLng center = new LatLng(49.2136909999999971887518768198788166046142578125,  16.574813999999999936107997200451791286468505859375);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(center, 17));
+        getLocationPermission();
+        updateLocationUI();
+
     }
+
+    private void getLocationPermission() {
+        /*
+         * Request location permission, so that we can get the location of the
+         * device. The result of the permission request is handled by a callback,
+         * onRequestPermissionsResult.
+         */
+        if (ContextCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mLocationPermissionGranted = true;
+        } else {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        mLocationPermissionGranted = false;
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mLocationPermissionGranted = true;
+                }
+            }
+        }
+        updateLocationUI();
+    }
+
+    private void updateLocationUI() {
+        if (mMap == null) {
+            return;
+        }
+        try {
+            if (mLocationPermissionGranted) {
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+            } else {
+                mMap.setMyLocationEnabled(false);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+//                mLastKnownLocation = null;
+                getLocationPermission();
+            }
+        } catch (SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
+    private void getDeviceLocation() {
+        /*
+         * Get the best and most recent location of the device, which may be null in rare
+         * cases when a location is not available.
+         */
+        try {
+            if (mLocationPermissionGranted) {
+                Task locationResult = fusedLocationClient.getLastLocation();
+                locationResult.addOnCompleteListener(getActivity(), new OnCompleteListener() {
+                    @Override
+                    public void onComplete(@NonNull Task task) {
+                        if (task.isSuccessful()) {
+                            // Set the map's camera position to the current location of the device.
+                            lastKnownLocation = (Location)task.getResult();
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(lastKnownLocation.getLatitude(),
+                                            lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                        } else {
+                            Log.d("LOCATION", "Current location is null. Using defaults.");
+                            Log.e("LOCATION", "Exception: %s", task.getException());
+//                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
+//                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                        }
+                    }
+                });
+            }
+        } catch(SecurityException e)  {
+            Log.e("Exception: %s", e.getMessage());
+        }
+    }
+
 
     private void addAllLocations() {
         for(LocationPoint location : locations.values()) {
@@ -136,16 +242,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void loadLocations() {
-        /*
-        LocationPoint zabovresky = new LocationPoint(1l,"Zabovresky", "District", 49.2136909999999971887518768198788166046142578125,  16.574813999999999936107997200451791286468505859375);
-        locations.put(zabovresky.getTitle(),zabovresky);
-
-        LocationPoint vidnava = new LocationPoint(2l,"Vidnava", "Town", 50.3711727,17.1877859);
-        locations.put(vidnava.getTitle(),vidnava);
-
-        LocationPoint poruba = new LocationPoint(3l,"Poruba", "District", 49.8310344,18.1642107);
-        locations.put(poruba.getTitle(),poruba);
-        */
 
         GsonRequest<LocationPoint[]> request = new GsonRequest<LocationPoint[]>(
                 Request.Method.GET,
