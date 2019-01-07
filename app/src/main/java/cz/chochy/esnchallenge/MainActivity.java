@@ -20,16 +20,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     public static String API_URL = "https://fiesta.esncz.org";
 
-    private static RequestQueue queueInstance;
+//    private static RequestQueue queueInstance;
 
     public String accessToken;
 
-    public static RequestQueue getQueueInstance(Activity activity) {
-        if(queueInstance == null) {
-            queueInstance = Volley.newRequestQueue(activity);
-        }
-        return queueInstance;
-    }
+//    public static RequestQueue getQueueInstance(Activity activity) {
+//        if(queueInstance == null) {
+//            queueInstance = Volley.newRequestQueue(activity);
+//        }
+//        return queueInstance;
+//    }
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);

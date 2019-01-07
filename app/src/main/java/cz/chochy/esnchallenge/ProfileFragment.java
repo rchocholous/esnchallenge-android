@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -47,7 +48,7 @@ public class ProfileFragment extends Fragment {
     private TextView textName, textEmail, textFirstName, textLastName,  textGender, textUniversity, textSection;
     private LinearLayout layoutProfile;
     private ConstraintLayout layoutLogin;
-    private RequestQueue queue;
+//    private RequestQueue queue;
 
     private static ProfileData profileData;//TODO: static = ugly solution. Investigate on how to use "Bundle"
 
@@ -79,7 +80,7 @@ public class ProfileFragment extends Fragment {
 
         drawLogo();//TODO: Why I need to do this??
 
-        queue = MainActivity.getQueueInstance(this.getActivity());
+//        queue = MainActivity.getQueueInstance(this.getActivity());
 
         layoutLogin = this.getActivity().findViewById(R.id.layout_login);
         layoutProfile = this.getActivity().findViewById(R.id.linear_layout_profile);
@@ -109,52 +110,7 @@ public class ProfileFragment extends Fragment {
                     MainActivity.hideKeyboard(getActivity());
                 }
 
-                StringRequest request = new StringRequest(
-                        Request.Method.POST,
-                        MainActivity.API_URL + "/api/auth",
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String responseString) {
-                                JSONObject response = null;
-                                try {
-                                    response = new JSONObject(responseString);
-                                    ((MainActivity)getActivity()).setAccessToken(response.getString("access_token"));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                Log.v("API", response.toString());
-
-                                loadProfileData();
-
-                                showProfileView();
-                                Toast.makeText(getActivity(),response.toString(),Toast.LENGTH_LONG).show();
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.v("API", error.toString());
-                                Toast.makeText(getActivity(),error.toString(),Toast.LENGTH_LONG).show();
-                            }
-                        })
-                {
-                    @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        HashMap<String, String> headers = new HashMap<String, String>();
-                        headers.put("Content-Type", "application/x-www-form-urlencoded");
-                        return headers;
-                    }
-                    @Override
-                    public Map<String, String> getParams() throws AuthFailureError {
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("email", fieldEmail.getText().toString());
-                        params.put("password", fieldPassword.getText().toString());
-                        return params;
-                    }
-                };
-                queue.add(request);
-
-
+                loadAccessToken();
             }
         });
 
@@ -180,6 +136,12 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        VolleyController.getInstance(getActivity().getApplicationContext()).getRequestQueue().cancelAll("PROFILE");
+    }
+
     private void showProfileView() {
         layoutLogin.setVisibility(View.GONE);
         layoutProfile.setVisibility(View.VISIBLE);
@@ -190,6 +152,67 @@ public class ProfileFragment extends Fragment {
         layoutProfile.setVisibility(View.GONE);
     }
 
+    private void loadAccessToken() {
+
+        StringRequest request = new StringRequest(
+                Request.Method.POST,
+                MainActivity.API_URL + "/api/auth",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String responseString) {
+                        JSONObject response;
+                        try {
+                            response = new JSONObject(responseString);
+                            ((MainActivity)getActivity()).setAccessToken(response.getString("access_token"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+//                        Log.v("API", response.toString());
+
+                        loadProfileData();
+
+                        showProfileView();
+                        Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+//                        Log.v("API", error.toString());
+                        if(error instanceof NoConnectionError) {
+                            Toast.makeText(getContext(),"No internet connection.",Toast.LENGTH_LONG).show();
+                        } else if(error instanceof AuthFailureError) {
+                            Toast.makeText(getContext(),"Incorrect credentials.",Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(getContext(),error.toString(),Toast.LENGTH_LONG).show();
+                        }
+                    }
+                })
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<String, String>();
+                headers.put("Content-Type", "application/x-www-form-urlencoded");
+                return headers;
+            }
+            @Override
+            public Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("email", fieldEmail.getText().toString());
+                params.put("password", fieldPassword.getText().toString());
+                return params;
+            }
+        };
+        request.setTag("PROFILE");
+        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
+
+    }
+
+
+//    private void makeRequest(String url, VolleyCallback callback) {
+//
+//    }
+
     private void loadProfileData() {
 
         GsonRequest<ProfileData> request = new GsonRequest<ProfileData>(
@@ -199,19 +222,19 @@ public class ProfileFragment extends Fragment {
                 new Response.Listener<ProfileData>() {
                     @Override
                     public void onResponse(ProfileData response) {
-                        Log.v("API", response.toString());
+//                        Log.v("API", response.toString());
 
                         ProfileFragment.profileData = response;
                         ProfileFragment.this.populateProfileData(ProfileFragment.profileData);
 
-                        Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Profile data loaded.", Toast.LENGTH_LONG).show();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.v("API", error.toString());
-                        Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+//                        Log.v("API", error.toString());
+                        Toast.makeText(getContext(), "Failed to load profile data.", Toast.LENGTH_LONG).show();
                     }
                 }) {
             @Override
@@ -221,7 +244,8 @@ public class ProfileFragment extends Fragment {
                 return headers;
             }
         };
-        queue.add(request);
+        request.setTag("PROFILE");
+        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
 
     }
 

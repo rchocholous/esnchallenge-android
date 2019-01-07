@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -55,7 +56,7 @@ import cz.chochy.esnchallenge.tools.GsonRequest;
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private static final int DEFAULT_ZOOM = 15;
-    private RequestQueue queue;
+//    private RequestQueue queue;
 
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
@@ -97,9 +98,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        queue = MainActivity.getQueueInstance(this.getActivity());
+//        queue = MainActivity.getQueueInstance(this.getActivity());
 
         buttonCheck = this.getActivity().findViewById(R.id.button_check);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        VolleyController.getInstance(getActivity().getApplicationContext()).getRequestQueue().cancelAll("MAP");
     }
 
     @Override
@@ -115,32 +122,45 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 getDeviceLocation();
                 //Find nearest location (50.3722211,17.1849737)
-                final Location actual = lastKnownLocation;
-//                actual.setLatitude(50.3722211);
-//                actual.setLongitude(17.1849737);
-/*
-                List<LocationPoint> list = new ArrayList<>(locations.values());
-                Collections.sort(list, new Comparator<LocationPoint>() {
-                    @Override
-                    public int compare(LocationPoint o1, LocationPoint o2) {
-                        return (int) (o1.distanceTo(actual) - (o2.distanceTo(actual)));
-                    }
-                });
+                final Location actual = lastKnownLocation; //new Location("");
+//                actual.setLatitude(17.1849737);
+//                actual.setLongitude(50.3722211);
 
-                for (LocationPoint l : list) {
-                    Log.v("SORTED", l.getTitle() + ", distance: " + l.distanceTo(actual));
-                }
+                if(actual != null) {
+                    if(locations != null && !locations.isEmpty()) {
+                        List<LocationPoint> list = new ArrayList<>(locations.values());
+                        Collections.sort(list, new Comparator<LocationPoint>() {
+                            @Override
+                            public int compare(LocationPoint o1, LocationPoint o2) {
+                                return (int) (o1.distanceTo(actual) - (o2.distanceTo(actual)));
+                            }
+                        });
 
-                if(!list.isEmpty()) {
-                    for(LocationPoint location : list) {
-                        if(location.isInsideRadius(actual)) {//TODO: Works only if radius is always same
-                            //TODO: locations.get(list.get(0).getTitle()).getCircle().setFillColor(0x7FA0A500);// Only if is inside range
-                            locationCheck(location);
-                        } else {
-                            break;
+                        for (LocationPoint l : list) {
+                            Log.v("SORTED", l.getTitle() + ", distance: " + l.distanceTo(actual));
                         }
+
+                        boolean checked = false;
+                        if (!list.isEmpty()) {
+                            for (LocationPoint location : list) {
+                                if (location.isInsideRadius(actual)) {//TODO: Works only if radius is always same
+                                    //TODO: locations.get(list.get(0).getTitle()).getCircle().setFillColor(0x7FA0A500);// Only if is inside range
+                                    checked = true;
+                                    locationCheck(location);
+                                } else {
+                                    break;
+                                }
+                            }
+                            if (!checked) {
+                                Toast.makeText(getContext(), "Too far from any location.", Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                    } else {
+                        Toast.makeText(getContext(), "You need internet to load locations.", Toast.LENGTH_LONG).show();
                     }
-                }*/
+                } else {
+                }
             }
         });
 
@@ -216,9 +236,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         if (task.isSuccessful()) {
                             // Set the map's camera position to the current location of the device.
                             lastKnownLocation = (Location)task.getResult();
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                            /*mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                                     new LatLng(lastKnownLocation.getLatitude(),
-                                            lastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+                                            lastKnownLocation.getLongitude()), DEFAULT_ZOOM));*/
                         } else {
                             Log.d("LOCATION", "Current location is null. Using defaults.");
                             Log.e("LOCATION", "Exception: %s", task.getException());
@@ -256,7 +276,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 new Response.Listener<LocationPoint[]>() {
                     @Override
                     public void onResponse(LocationPoint[] response) {
-                        Log.v("API", response.toString());
+//                        Log.v("API", response.toString());
+                        locations.clear();
 
                         //TODO: save data
                         for(LocationPoint location : response) {
@@ -264,14 +285,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         }
                         addAllLocations();
 
-                        Toast.makeText(getActivity(),response.toString(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(),"Locations loaded.",Toast.LENGTH_LONG).show();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.v("API", error.toString());
-                        Toast.makeText(getActivity(),error.toString(),Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(),"Failed to load locations.",Toast.LENGTH_LONG).show();
                     }
                 })
         {
@@ -282,7 +303,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 return headers;
             }
         };
-        queue.add(request);
+        request.setTag("MAP");
+        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
 
     }
 
@@ -303,7 +325,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            Log.v("API", response.toString());
+//                            Log.v("API", response.toString());
 
                             //TODO: Do something
                             Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
@@ -312,8 +334,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Log.v("API", error.toString());
-                            Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+//                            Log.v("API", error.toString());
+                            if(error instanceof NoConnectionError) {
+                                Toast.makeText(getContext(),"No internet connection.",Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                            }
                         }
                     }) {
                 @Override
@@ -330,7 +356,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     return params;
                 }
             };
-            queue.add(request);
+            request.setTag("MAP");
+            VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
 
         } else {
             Toast.makeText(getActivity(), "Not logged in.", Toast.LENGTH_LONG).show();
