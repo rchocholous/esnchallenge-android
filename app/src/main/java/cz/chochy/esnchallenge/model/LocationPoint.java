@@ -1,6 +1,8 @@
 package cz.chochy.esnchallenge.model;
 
+import android.content.res.Resources;
 import android.location.Location;
+import android.support.v4.content.res.ResourcesCompat;
 
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -9,6 +11,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.Serializable;
+
+import cz.chochy.esnchallenge.R;
 
 /**
  * @author chochy
@@ -43,8 +47,13 @@ public class LocationPoint implements Serializable {
         return new MarkerOptions().position(new LatLng(lat,lng)).title(title).snippet(type);
     }
 
-    public CircleOptions buildCircleOptions() {
-        return new CircleOptions().center(new LatLng(lat,lng)).radius(this.radius).strokeColor(0xFFFFA500).fillColor(0x7FFFA500);
+    public CircleOptions buildCircleOptions(Resources resources) {
+        return new CircleOptions()
+                .center(new LatLng(lat,lng))
+                .radius(this.radius)
+                .fillColor(ResourcesCompat.getColor(resources, R.color.orangeLightTransparentColor, null))
+                .strokeColor(ResourcesCompat.getColor(resources, R.color.orangeColor, null))
+                .strokeWidth(10);
     }
 
     public float distanceTo(LocationPoint location) {

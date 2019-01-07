@@ -1,8 +1,10 @@
 package cz.chochy.esnchallenge;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,8 +45,11 @@ public class ProfileFragment extends Fragment {
     private Button buttonLogin, buttonLogout;
     private EditText fieldEmail, fieldPassword;
     private TextView textName, textEmail, textFirstName, textLastName,  textGender, textUniversity, textSection;
-    private LinearLayout layoutLogin, layoutProfile;
+    private LinearLayout layoutProfile;
+    private ConstraintLayout layoutLogin;
     private RequestQueue queue;
+
+    private static ProfileData profileData;//TODO: static = ugly solution. Investigate on how to use "Bundle"
 
     @Nullable
     @Override
@@ -59,13 +65,23 @@ public class ProfileFragment extends Fragment {
 //        ((MainActivity)this.getActivity()).getSupportActionBar().show();
     }
 
+    @Deprecated
+    private void drawLogo() {
+        ImageView imageLogo = (ImageView) this.getActivity().findViewById(R.id.imageLogo);
+        imageLogo.setImageResource(0);
+        Drawable draw = getResources().getDrawable(R.drawable.logo);
+        imageLogo.setImageDrawable(draw);
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        queue = Volley.newRequestQueue(this.getActivity());
+        drawLogo();//TODO: Why I need to do this??
 
-        layoutLogin = this.getActivity().findViewById(R.id.linear_layout_login);
+        queue = MainActivity.getQueueInstance(this.getActivity());
+
+        layoutLogin = this.getActivity().findViewById(R.id.layout_login);
         layoutProfile = this.getActivity().findViewById(R.id.linear_layout_profile);
 
         buttonLogin = this.getActivity().findViewById(R.id.button_login);
@@ -86,6 +102,13 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                View view = getView();
+                if(view != null) {//TODO: !
+                    MainActivity.hideKeyboardFrom(getActivity(),view);
+                } else {
+                    MainActivity.hideKeyboard(getActivity());
+                }
+
                 StringRequest request = new StringRequest(
                         Request.Method.POST,
                         MainActivity.API_URL + "/api/auth",
@@ -101,11 +124,9 @@ public class ProfileFragment extends Fragment {
                                 }
                                 Log.v("API", response.toString());
 
-                                //TODO: save data
-
                                 loadProfileData();
-                                layoutLogin.setVisibility(View.GONE);
-                                layoutProfile.setVisibility(View.VISIBLE);
+
+                                showProfileView();
                                 Toast.makeText(getActivity(),response.toString(),Toast.LENGTH_LONG).show();
                             }
                         },
@@ -140,11 +161,33 @@ public class ProfileFragment extends Fragment {
         buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: logout - clear data
-                layoutLogin.setVisibility(View.VISIBLE);
-                layoutProfile.setVisibility(View.GONE);
+                ProfileFragment.profileData = null;
+                ((MainActivity)getActivity()).setAccessToken(null);
+                showLoginView();
             }
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(isLoggedIn()) {
+            showProfileView();
+            populateProfileData(ProfileFragment.profileData);
+        } else {
+            showLoginView();
+        }
+    }
+
+    private void showProfileView() {
+        layoutLogin.setVisibility(View.GONE);
+        layoutProfile.setVisibility(View.VISIBLE);
+    }
+
+    private void showLoginView() {
+        layoutLogin.setVisibility(View.VISIBLE);
+        layoutProfile.setVisibility(View.GONE);
     }
 
     private void loadProfileData() {
@@ -158,7 +201,8 @@ public class ProfileFragment extends Fragment {
                     public void onResponse(ProfileData response) {
                         Log.v("API", response.toString());
 
-                        populateProfileData(response);
+                        ProfileFragment.profileData = response;
+                        ProfileFragment.this.populateProfileData(ProfileFragment.profileData);
 
                         Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
                     }
@@ -193,5 +237,9 @@ public class ProfileFragment extends Fragment {
                 textSection.setText(profile.getUniversity().getSectionShort());
             }
         }
+    }
+
+    public boolean isLoggedIn() {
+        return ProfileFragment.profileData != null;
     }
 }

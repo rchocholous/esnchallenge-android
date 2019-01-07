@@ -97,7 +97,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        queue = Volley.newRequestQueue(this.getActivity());
+        queue = MainActivity.getQueueInstance(this.getActivity());
 
         buttonCheck = this.getActivity().findViewById(R.id.button_check);
     }
@@ -113,11 +113,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         buttonCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getDeviceLocation();
                 //Find nearest location (50.3722211,17.1849737)
-                final Location actual = new Location("Actual");
-                actual.setLatitude(50.3722211);
-                actual.setLongitude(17.1849737);
-
+                final Location actual = lastKnownLocation;
+//                actual.setLatitude(50.3722211);
+//                actual.setLongitude(17.1849737);
+/*
                 List<LocationPoint> list = new ArrayList<>(locations.values());
                 Collections.sort(list, new Comparator<LocationPoint>() {
                     @Override
@@ -126,15 +127,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     }
                 });
 
-                if(list != null && !list.isEmpty()) {
-                    locations.get(list.get(0).getTitle()).getCircle().setFillColor(0x7FA0A500);// Only if is inside range
-
-                    locationCheck(list.get(0));
-                }
-
                 for (LocationPoint l : list) {
                     Log.v("SORTED", l.getTitle() + ", distance: " + l.distanceTo(actual));
                 }
+
+                if(!list.isEmpty()) {
+                    for(LocationPoint location : list) {
+                        if(location.isInsideRadius(actual)) {//TODO: Works only if radius is always same
+                            //TODO: locations.get(list.get(0).getTitle()).getCircle().setFillColor(0x7FA0A500);// Only if is inside range
+                            locationCheck(location);
+                        } else {
+                            break;
+                        }
+                    }
+                }*/
             }
         });
 
@@ -237,7 +243,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private void addLocation(LocationPoint location) {
         if(locations.containsKey(location.getTitle())) {
             locations.get(location.getTitle()).setMarker(mMap.addMarker(location.buildMarkerOptions()));
-            locations.get(location.getTitle()).setCircle(mMap.addCircle(location.buildCircleOptions()));
+            locations.get(location.getTitle()).setCircle(mMap.addCircle(location.buildCircleOptions(getResources())));
         }
     }
 
