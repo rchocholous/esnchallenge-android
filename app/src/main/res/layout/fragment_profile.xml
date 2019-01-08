@@ -39,18 +39,33 @@
             android:id="@+id/textView9"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:drawableLeft="@drawable/ic_orange_web"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
             android:text="Check yout official site" />
 
         <TextView
             android:id="@+id/textView10"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:drawableLeft="@drawable/ic_orange_facebook"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
             android:text="Like us on Facebook" />
 
         <TextView
             android:id="@+id/textView12"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:drawableLeft="@drawable/ic_orange_instagram"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
             android:text="Follow us on Instagram" />
 
         <TextView
@@ -64,24 +79,43 @@
             android:id="@+id/textView15"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
             android:text="Rate the app" />
 
         <TextView
             android:id="@+id/textView18"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:drawableLeft="@drawable/ic_orange_recommend"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
             android:text="Share with friends" />
 
         <TextView
             android:id="@+id/textView19"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:drawableLeft="@drawable/ic_orange_message"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
             android:text="Contact us" />
 
         <TextView
             android:id="@+id/textView20"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:drawableLeft="@drawable/ic_orange_sync"
+            android:drawablePadding="4dp"
+            android:gravity="center_vertical"
             android:text="Terms of service" />
     </LinearLayout>
 
