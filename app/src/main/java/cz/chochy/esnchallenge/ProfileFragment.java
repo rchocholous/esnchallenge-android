@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -44,9 +45,10 @@ import cz.chochy.esnchallenge.tools.GsonRequest;
 public class ProfileFragment extends Fragment {
 
     private Button buttonLogin, buttonLogout;
+    private ImageButton buttonSettingsOpen, buttonSettingsClose;
     private EditText fieldEmail, fieldPassword;
     private TextView textName, textEmail, textFirstName, textLastName,  textGender, textUniversity, textSection;
-    private LinearLayout layoutProfile;
+    private LinearLayout layoutProfile, layoutSettings;
     private ConstraintLayout layoutLogin;
 //    private RequestQueue queue;
 
@@ -84,9 +86,12 @@ public class ProfileFragment extends Fragment {
 
         layoutLogin = this.getActivity().findViewById(R.id.layout_login);
         layoutProfile = this.getActivity().findViewById(R.id.linear_layout_profile);
+        layoutSettings = this.getActivity().findViewById(R.id.layour_settings);
 
         buttonLogin = this.getActivity().findViewById(R.id.button_login);
         buttonLogout = this.getActivity().findViewById(R.id.button_logout);
+        buttonSettingsOpen = this.getActivity().findViewById(R.id.button_settings_open);
+        buttonSettingsClose = this.getActivity().findViewById(R.id.button_settings_close);
 
         fieldEmail = this.getActivity().findViewById(R.id.edit_text_email);
         fieldPassword = this.getActivity().findViewById(R.id.edit_text_password);
@@ -119,7 +124,22 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 ProfileFragment.profileData = null;
                 ((MainActivity)getActivity()).setAccessToken(null);
-                showLoginView();
+//                showLoginView();
+                showLayout(LayoutEnum.LOGIN);
+            }
+        });
+
+        buttonSettingsOpen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLayout(LayoutEnum.SETTINGS);
+            }
+        });
+
+        buttonSettingsClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLayout(LayoutEnum.PROFILE);
             }
         });
     }
@@ -129,10 +149,12 @@ public class ProfileFragment extends Fragment {
         super.onResume();
 
         if(isLoggedIn()) {
-            showProfileView();
+//            showProfileView();
+            showLayout(LayoutEnum.PROFILE);
             populateProfileData(ProfileFragment.profileData);
         } else {
-            showLoginView();
+//            showLoginView();
+            showLayout(LayoutEnum.LOGIN);
         }
     }
 
@@ -140,6 +162,26 @@ public class ProfileFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         VolleyController.getInstance(getActivity().getApplicationContext()).getRequestQueue().cancelAll("PROFILE");
+    }
+
+    private void showLayout(LayoutEnum layout) {
+        switch (layout) {
+            case PROFILE:
+                layoutLogin.setVisibility(View.GONE);
+                layoutProfile.setVisibility(View.VISIBLE);
+                layoutSettings.setVisibility(View.GONE);
+                break;
+            case SETTINGS:
+                layoutLogin.setVisibility(View.GONE);
+                layoutProfile.setVisibility(View.GONE);
+                layoutSettings.setVisibility(View.VISIBLE);
+                break;
+            default:
+                layoutLogin.setVisibility(View.VISIBLE);
+                layoutProfile.setVisibility(View.GONE);
+                layoutSettings.setVisibility(View.GONE);
+                break;
+        }
     }
 
     private void showProfileView() {
@@ -171,7 +213,8 @@ public class ProfileFragment extends Fragment {
 
                         loadProfileData();
 
-                        showProfileView();
+//                        showProfileView();
+                        showLayout(LayoutEnum.PROFILE);
                         Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
                     }
                 },
@@ -265,5 +308,11 @@ public class ProfileFragment extends Fragment {
 
     public boolean isLoggedIn() {
         return ProfileFragment.profileData != null;
+    }
+
+    private enum LayoutEnum {
+        LOGIN,
+        PROFILE,
+        SETTINGS;
     }
 }

@@ -9,6 +9,7 @@ import java.io.Serializable;
 public class University implements Serializable {
     private String name;
     private String sectionShort;
+    private String sectionLong;
 
     public University() {
 
@@ -35,11 +36,20 @@ public class University implements Serializable {
         this.sectionShort = sectionShort;
     }
 
+    public String getSectionLong() {
+        return sectionLong;
+    }
+
+    public void setSectionLong(String sectionLong) {
+        this.sectionLong = sectionLong;
+    }
+
     @Override
     public String toString() {
         return "University{" +
                 "name='" + name + '\'' +
                 ", sectionShort='" + sectionShort + '\'' +
+                ", sectionLong='" + sectionLong + '\'' +
                 '}';
     }
 }
