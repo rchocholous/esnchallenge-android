@@ -1,0 +1,76 @@
+package cz.chochy.esnchallenge.model;
+
+import java.io.Serializable;
+
+/**
+ * @author chochy
+ * Date: 2019-01-08
+ */
+public class HighScore implements Serializable {
+    private String signature;
+    private String name;
+    private String country;
+    private String section;
+    private Integer point;
+    private Integer rank;
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
+    }
+
+    public Integer getPoint() {
+        return point;
+    }
+
+    public void setPoint(Integer point) {
+        this.point = point;
+    }
+
+    public Integer getRank() {
+        return rank;
+    }
+
+    public void setRank(Integer rank) {
+        this.rank = rank;
+    }
+
+    @Override
+    public String toString() {
+        return "HighScore{" +
+                "signature='" + signature + '\'' +
+                ", name='" + name + '\'' +
+                ", country='" + country + '\'' +
+                ", section='" + section + '\'' +
+                ", point=" + point +
+                ", rank=" + rank +
+                '}';
+    }
+}

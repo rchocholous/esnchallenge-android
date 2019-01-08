@@ -18,7 +18,8 @@ import com.android.volley.toolbox.Volley;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-    public static String API_URL = "https://fiesta.esncz.org";
+    public static String API_AUTH_URL = "https://fiesta.esncz.org";
+    public static String API_URL = "https://esngeo.azurewebsites.net";
 
 //    private static RequestQueue queueInstance;
 

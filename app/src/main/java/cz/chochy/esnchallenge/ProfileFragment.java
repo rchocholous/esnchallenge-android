@@ -198,7 +198,7 @@ public class ProfileFragment extends Fragment {
 
         StringRequest request = new StringRequest(
                 Request.Method.POST,
-                MainActivity.API_URL + "/api/auth",
+                MainActivity.API_AUTH_URL + "/api/auth",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String responseString) {
@@ -260,7 +260,7 @@ public class ProfileFragment extends Fragment {
 
         GsonRequest<ProfileData> request = new GsonRequest<ProfileData>(
                 Request.Method.GET,
-                MainActivity.API_URL + "/api/profile",
+                MainActivity.API_AUTH_URL + "/api/profile",
                 ProfileData.class,
                 new Response.Listener<ProfileData>() {
                     @Override
