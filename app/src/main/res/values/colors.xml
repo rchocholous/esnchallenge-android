@@ -5,6 +5,7 @@
     <color name="colorPrimary">@color/orangeColor</color>
     <color name="colorPrimaryDark">@color/orangeColor</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="colorAccentTransparent">#87D81B60</color>
     <color name="orangeColor">#fc7422</color>
     <color name="orangeLightTransparentColor">#87fc7422</color>
     <color name="whiteButtonText">#ffffff</color>

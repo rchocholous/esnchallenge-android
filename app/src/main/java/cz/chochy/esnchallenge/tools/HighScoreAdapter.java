@@ -41,12 +41,21 @@ public class HighScoreAdapter extends ArrayAdapter<HighScore> {
         rowView = inflater.inflate(R.layout.layout_score_row, parent, false);
 
         // Displaying a textview
-        TextView textView = (TextView) rowView.findViewById(R.id.text_username);
-        textView.setText(scores.get(position).getName());
 
 
-        TextView textView2 = (TextView) rowView.findViewById(R.id.text_userscore);
-        textView2.setText(scores.get(position).getPoint().toString());
+        TextView textViewRank = (TextView) rowView.findViewById(R.id.text_rank);
+        textViewRank.setText(scores.get(position).getRank().toString());
+
+        TextView textViewUsername = (TextView) rowView.findViewById(R.id.text_username);
+        textViewUsername.setText(scores.get(position).getName());
+
+
+        TextView textViewSection = (TextView) rowView.findViewById(R.id.text_section);
+        textViewSection.setText(scores.get(position).getSection().toString());
+
+
+        TextView textViewPoints = (TextView) rowView.findViewById(R.id.text_points);
+        textViewPoints.setText(scores.get(position).getPoint().toString());
 
 
         return rowView;

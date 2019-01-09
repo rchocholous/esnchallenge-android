@@ -26,12 +26,19 @@ public class LocationPoint implements Serializable {
     private Double lng;
 
     private int radius = 100;//meters
+    private boolean checked = false;
 
     private Marker marker;
     private Circle circle;
+    private Resources resources;
 
     public LocationPoint() {
 
+    }
+
+    public LocationPoint(Long id, String title, String type, Double lat, Double lng, boolean checked) {
+        this(id, title, type, lat, lng);
+        this.checked = checked;
     }
 
     public LocationPoint(Long id, String title, String type, Double lat, Double lng) {
@@ -48,11 +55,17 @@ public class LocationPoint implements Serializable {
     }
 
     public CircleOptions buildCircleOptions(Resources resources) {
+        this.resources = resources;
+
+        int fillColor = ResourcesCompat.getColor(this.resources, R.color.orangeLightTransparentColor, null);
+        if(checked) {
+            fillColor = ResourcesCompat.getColor(this.resources, R.color.colorAccentTransparent, null);
+        }
         return new CircleOptions()
                 .center(new LatLng(lat,lng))
                 .radius(this.radius)
-                .fillColor(ResourcesCompat.getColor(resources, R.color.orangeLightTransparentColor, null))
-                .strokeColor(ResourcesCompat.getColor(resources, R.color.orangeColor, null))
+                .fillColor(fillColor)
+                .strokeColor(ResourcesCompat.getColor(this.resources, R.color.orangeColor, null))
                 .strokeWidth(10);
     }
 
@@ -137,5 +150,12 @@ public class LocationPoint implements Serializable {
 
     public void setCircle(Circle circle) {
         this.circle = circle;
+    }
+
+    public void check() {
+        this.checked = true;
+        if(circle != null) {
+            circle.setFillColor(ResourcesCompat.getColor(this.resources, R.color.colorAccentTransparent, null));
+        }
     }
 }

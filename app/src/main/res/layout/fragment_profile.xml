@@ -243,7 +243,7 @@
             android:textSize="30sp" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/text_checked_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Check location: 0/10" />
@@ -324,6 +324,20 @@
 
         <TextView
             android:id="@+id/text_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/textView_visited_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Checked locations"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+
+        <ListView
+            android:id="@+id/listview_visited_locations"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

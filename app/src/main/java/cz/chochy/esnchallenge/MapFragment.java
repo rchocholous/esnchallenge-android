@@ -55,6 +55,8 @@ import cz.chochy.esnchallenge.tools.GsonRequest;
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
+    public static int locationsCount;
+
     private static final int DEFAULT_ZOOM = 15;
 //    private RequestQueue queue;
 
@@ -166,6 +168,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         getLocationPermission();
         updateLocationUI();
+        //getDeviceLocation();
 
     }
 
@@ -258,6 +261,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         for(LocationPoint location : locations.values()) {
             addLocation(location);
         }
+
+        if(ProfileFragment.isLoggedIn() && ProfileFragment.profileData != null) {
+            List<LocationPoint> checkedLocations = ProfileFragment.profileData.getCheckedLocations();
+            if(checkedLocations != null) {
+                for(LocationPoint location : checkedLocations) {
+                    locations.get(location.getTitle()).check();
+                }
+            }
+
+        }
     }
 
     private void addLocation(LocationPoint location) {
@@ -283,6 +296,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         for(LocationPoint location : response) {
                             locations.put(location.getTitle(),location);
                         }
+                        locationsCount = locations.size();
                         addAllLocations();
 
                         Toast.makeText(getContext(),"Locations loaded.",Toast.LENGTH_LONG).show();
@@ -315,7 +329,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             StringRequest request = new StringRequest(
                     Request.Method.POST,
-                    MainActivity.API_AUTH_URL + "/api/location",
+                    MainActivity.API_URL + "/api/location",
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String responseString) {

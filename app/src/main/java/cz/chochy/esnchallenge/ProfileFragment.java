@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,12 +32,15 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import cz.chochy.esnchallenge.model.LocationPoint;
 import cz.chochy.esnchallenge.model.ProfileData;
 import cz.chochy.esnchallenge.model.University;
 import cz.chochy.esnchallenge.tools.GsonRequest;
+import cz.chochy.esnchallenge.tools.VisitedLocationsAdapter;
 
 /**
  * @author chochy
@@ -47,12 +51,15 @@ public class ProfileFragment extends Fragment {
     private Button buttonLogin, buttonLogout;
     private ImageButton buttonSettingsOpen, buttonSettingsClose;
     private EditText fieldEmail, fieldPassword;
-    private TextView textName, textEmail, textFirstName, textLastName,  textGender, textUniversity, textSection;
+    private TextView textName, textEmail, textFirstName, textLastName,  textGender, textUniversity, textSection, textLocationCount;
     private LinearLayout layoutProfile, layoutSettings;
     private ConstraintLayout layoutLogin;
+
+
+    private ListView locationsListView;
 //    private RequestQueue queue;
 
-    private static ProfileData profileData;//TODO: static = ugly solution. Investigate on how to use "Bundle"
+    public static ProfileData profileData;//TODO: static = ugly solution. Investigate on how to use "Bundle"
 
     @Nullable
     @Override
@@ -103,6 +110,10 @@ public class ProfileFragment extends Fragment {
         textGender = this.getActivity().findViewById(R.id.text_gender);
         textUniversity = this.getActivity().findViewById(R.id.text_university);
         textSection = this.getActivity().findViewById(R.id.text_section);
+
+        textLocationCount = this.getActivity().findViewById(R.id.text_checked_count);
+
+        locationsListView = (ListView) this.getActivity().findViewById(R.id.listview_visited_locations);
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -260,7 +271,7 @@ public class ProfileFragment extends Fragment {
 
         GsonRequest<ProfileData> request = new GsonRequest<ProfileData>(
                 Request.Method.GET,
-                MainActivity.API_AUTH_URL + "/api/profile",
+                MainActivity.API_URL + "/api/profile",
                 ProfileData.class,
                 new Response.Listener<ProfileData>() {
                     @Override
@@ -269,6 +280,7 @@ public class ProfileFragment extends Fragment {
 
                         ProfileFragment.profileData = response;
                         ProfileFragment.this.populateProfileData(ProfileFragment.profileData);
+
 
                         Toast.makeText(getContext(), "Profile data loaded.", Toast.LENGTH_LONG).show();
                     }
@@ -303,10 +315,15 @@ public class ProfileFragment extends Fragment {
                 textUniversity.setText(profile.getUniversity().getName());
                 textSection.setText(profile.getUniversity().getSectionShort());
             }
+            if(profile.getCheckedLocations() != null) {
+                textLocationCount.setText(String.format("Check location: %d/%d", profile.getCheckedLocations().size(), MapFragment.locationsCount));
+                locationsListView.setAdapter(new VisitedLocationsAdapter(getContext(), (ArrayList<LocationPoint>) profile.getCheckedLocations()));
+            }
+
         }
     }
 
-    public boolean isLoggedIn() {
+    public static boolean isLoggedIn() {
         return ProfileFragment.profileData != null;
     }
 
