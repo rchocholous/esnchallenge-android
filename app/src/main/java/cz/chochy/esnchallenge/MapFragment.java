@@ -315,7 +315,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
             StringRequest request = new StringRequest(
                     Request.Method.POST,
-                    MainActivity.API_URL + "/api/location",
+                    MainActivity.API_AUTH_URL + "/api/location",
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String responseString) {
