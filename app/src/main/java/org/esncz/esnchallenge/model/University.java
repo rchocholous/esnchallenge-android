@@ -1,4 +1,4 @@
-package cz.chochy.esnchallenge.model;
+package org.esncz.esnchallenge.model;
 
 import java.io.Serializable;
 

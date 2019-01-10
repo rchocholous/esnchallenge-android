@@ -1,4 +1,4 @@
-package cz.chochy.esnchallenge;
+package org.esncz.esnchallenge;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("cz.chochy.esnchalange", appContext.getPackageName());
+        assertEquals("org.esncz.esnchalange", appContext.getPackageName());
     }
 }

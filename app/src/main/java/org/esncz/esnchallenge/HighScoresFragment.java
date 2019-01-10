@@ -1,4 +1,4 @@
-package cz.chochy.esnchallenge;
+package org.esncz.esnchallenge;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -28,9 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cz.chochy.esnchallenge.model.HighScore;
-import cz.chochy.esnchallenge.tools.GsonRequest;
-import cz.chochy.esnchallenge.tools.HighScoreAdapter;
+import org.esncz.esnchallenge.model.HighScore;
+import org.esncz.esnchallenge.tools.GsonRequest;
+import org.esncz.esnchallenge.tools.HighScoreAdapter;
 
 /**
  * @author chochy

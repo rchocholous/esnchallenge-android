@@ -1,4 +1,4 @@
-package cz.chochy.esnchallenge;
+package org.esncz.esnchallenge;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -37,11 +37,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import cz.chochy.esnchallenge.model.LocationPoint;
-import cz.chochy.esnchallenge.model.ProfileData;
-import cz.chochy.esnchallenge.model.University;
-import cz.chochy.esnchallenge.tools.GsonRequest;
-import cz.chochy.esnchallenge.tools.VisitedLocationsAdapter;
+import org.esncz.esnchallenge.model.LocationPoint;
+import org.esncz.esnchallenge.model.ProfileData;
+import org.esncz.esnchallenge.model.University;
+import org.esncz.esnchallenge.tools.GsonRequest;
+import org.esncz.esnchallenge.tools.VisitedLocationsAdapter;
 
 /**
  * @author chochy

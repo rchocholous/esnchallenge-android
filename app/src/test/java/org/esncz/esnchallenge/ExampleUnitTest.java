@@ -1,4 +1,4 @@
-package cz.chochy.esnchallenge;
+package org.esncz.esnchallenge;
 
 import org.junit.Test;
 

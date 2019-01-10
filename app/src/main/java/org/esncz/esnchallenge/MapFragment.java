@@ -1,4 +1,4 @@
-package cz.chochy.esnchallenge;
+package org.esncz.esnchallenge;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -46,8 +46,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cz.chochy.esnchallenge.model.LocationPoint;
-import cz.chochy.esnchallenge.tools.GsonRequest;
+import org.esncz.esnchallenge.model.LocationPoint;
+import org.esncz.esnchallenge.tools.GsonRequest;
 
 /**
  * @author chochy

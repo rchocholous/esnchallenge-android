@@ -1,4 +1,4 @@
-package cz.chochy.esnchallenge.tools;
+package org.esncz.esnchallenge.tools;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,8 +9,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import cz.chochy.esnchallenge.R;
-import cz.chochy.esnchallenge.model.LocationPoint;
+import org.esncz.esnchallenge.R;
+import org.esncz.esnchallenge.model.LocationPoint;
 
 /**
  * @author chochy

@@ -1,4 +1,4 @@
-package cz.chochy.esnchallenge.tools;
+package org.esncz.esnchallenge.tools;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,8 +10,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import cz.chochy.esnchallenge.R;
-import cz.chochy.esnchallenge.model.HighScore;
+import org.esncz.esnchallenge.R;
+import org.esncz.esnchallenge.model.HighScore;
 
 /**
  * @author chochy

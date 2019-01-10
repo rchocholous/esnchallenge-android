@@ -1,4 +1,4 @@
-package cz.chochy.esnchallenge.tools;
+package org.esncz.esnchallenge.tools;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;

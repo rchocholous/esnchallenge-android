@@ -1,4 +1,4 @@
-package cz.chochy.esnchallenge.model;
+package org.esncz.esnchallenge.model;
 
 import android.content.res.Resources;
 import android.location.Location;
@@ -12,7 +12,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.Serializable;
 
-import cz.chochy.esnchallenge.R;
+import org.esncz.esnchallenge.R;
 
 /**
  * @author chochy
