@@ -20,6 +20,7 @@ public class GsonRequest<T> extends Request<T> {
     private final Gson mGson;
     private final Class<T> mClazz;
     private final Listener<T> mListener;
+    private Priority priority;
 
 
     public GsonRequest(int method,
@@ -46,6 +47,14 @@ public class GsonRequest<T> extends Request<T> {
         mGson = gson;
     }
 
+    @Override
+    public Priority getPriority() {
+        return this.priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
 
     @Override
     protected void deliverResponse(T response) {

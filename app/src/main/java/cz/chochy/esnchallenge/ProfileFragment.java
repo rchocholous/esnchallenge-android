@@ -16,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +55,7 @@ public class ProfileFragment extends Fragment {
     private TextView textName, textEmail, textFirstName, textLastName,  textGender, textUniversity, textSection, textLocationCount;
     private LinearLayout layoutProfile, layoutSettings;
     private ConstraintLayout layoutLogin;
+    private ProgressBar progressBar;
 
 
     private ListView locationsListView;
@@ -91,6 +93,8 @@ public class ProfileFragment extends Fragment {
 
 //        queue = MainActivity.getQueueInstance(this.getActivity());
 
+        progressBar = this.getActivity().findViewById(R.id.progress_bar);
+
         layoutLogin = this.getActivity().findViewById(R.id.layout_login);
         layoutProfile = this.getActivity().findViewById(R.id.linear_layout_profile);
         layoutSettings = this.getActivity().findViewById(R.id.layour_settings);
@@ -119,6 +123,8 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                showLayout(LayoutEnum.NONE);
+                progressBar.setVisibility(View.VISIBLE);
                 View view = getView();
                 if(view != null) {//TODO: !
                     MainActivity.hideKeyboardFrom(getActivity(),view);
@@ -153,6 +159,8 @@ public class ProfileFragment extends Fragment {
                 showLayout(LayoutEnum.PROFILE);
             }
         });
+
+        showLayout(LayoutEnum.LOGIN);
     }
 
     @Override
@@ -176,6 +184,10 @@ public class ProfileFragment extends Fragment {
     }
 
     private void showLayout(LayoutEnum layout) {
+        if(layout == null) {
+            layout = LayoutEnum.NONE;
+        }
+        progressBar.setVisibility(View.GONE);
         switch (layout) {
             case PROFILE:
                 layoutLogin.setVisibility(View.GONE);
@@ -187,8 +199,13 @@ public class ProfileFragment extends Fragment {
                 layoutProfile.setVisibility(View.GONE);
                 layoutSettings.setVisibility(View.VISIBLE);
                 break;
-            default:
+            case LOGIN:
                 layoutLogin.setVisibility(View.VISIBLE);
+                layoutProfile.setVisibility(View.GONE);
+                layoutSettings.setVisibility(View.GONE);
+                break;
+            default:
+                layoutLogin.setVisibility(View.GONE);
                 layoutProfile.setVisibility(View.GONE);
                 layoutSettings.setVisibility(View.GONE);
                 break;
@@ -219,20 +236,22 @@ public class ProfileFragment extends Fragment {
                             ((MainActivity)getActivity()).setAccessToken(response.getString("access_token"));
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            showLayout(LayoutEnum.LOGIN);
+                            Toast.makeText(getContext(),"Login failed.",Toast.LENGTH_LONG).show();
                         }
 //                        Log.v("API", response.toString());
 
                         loadProfileData();
 
 //                        showProfileView();
-                        showLayout(LayoutEnum.PROFILE);
-                        Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 //                        Log.v("API", error.toString());
+                        showLayout(LayoutEnum.LOGIN);
                         if(error instanceof NoConnectionError) {
                             Toast.makeText(getContext(),"No internet connection.",Toast.LENGTH_LONG).show();
                         } else if(error instanceof AuthFailureError) {
@@ -255,6 +274,10 @@ public class ProfileFragment extends Fragment {
                 params.put("email", fieldEmail.getText().toString());
                 params.put("password", fieldPassword.getText().toString());
                 return params;
+            }
+            @Override
+            public Priority getPriority() {
+                return Priority.IMMEDIATE;
             }
         };
         request.setTag("PROFILE");
@@ -282,13 +305,16 @@ public class ProfileFragment extends Fragment {
                         ProfileFragment.this.populateProfileData(ProfileFragment.profileData);
 
 
-                        Toast.makeText(getContext(), "Profile data loaded.", Toast.LENGTH_LONG).show();
+                        showLayout(LayoutEnum.PROFILE);
+//                        Toast.makeText(getContext(), "Profile data loaded.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 //                        Log.v("API", error.toString());
+                        showLayout(LayoutEnum.LOGIN);
                         Toast.makeText(getContext(), "Failed to load profile data.", Toast.LENGTH_LONG).show();
                     }
                 }) {
@@ -299,6 +325,7 @@ public class ProfileFragment extends Fragment {
                 return headers;
             }
         };
+        request.setPriority(Request.Priority.IMMEDIATE);
         request.setTag("PROFILE");
         VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
 
@@ -328,6 +355,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private enum LayoutEnum {
+        NONE,
         LOGIN,
         PROFILE,
         SETTINGS;

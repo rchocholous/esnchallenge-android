@@ -3,5 +3,7 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">esngeo.azurewebsites.net</domain>
         <domain includeSubdomains="true">fiesta.esncz.org</domain>
+        <domain includeSubdomains="true">challenge.esncz.org</domain>
+        <domain includeSubdomains="true">esncz.org</domain>
     </domain-config>
 </network-security-config>

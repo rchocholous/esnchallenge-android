@@ -7,7 +7,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -38,6 +40,8 @@ public class HighScoresFragment extends Fragment {
 
     private List<HighScore> highscores;
     private HighScoreAdapter scoreAdapter;
+    private ProgressBar progressBar;
+    private LinearLayout layoutHighScores;
 
     @Nullable
     @Override
@@ -48,6 +52,9 @@ public class HighScoresFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        progressBar = this.getActivity().findViewById(R.id.progress_bar);
+        layoutHighScores = this.getActivity().findViewById(R.id.layout_highscores);
 
         loadHighScores();
     }
@@ -60,6 +67,8 @@ public class HighScoresFragment extends Fragment {
 
     private void loadHighScores() {
 
+        progressBar.setVisibility(View.VISIBLE);
+        layoutHighScores.setVisibility(View.GONE);
 
         final ListView scoreListView = (ListView) this.getActivity().findViewById(R.id.listview_scores);
 
@@ -72,6 +81,9 @@ public class HighScoresFragment extends Fragment {
                     public void onResponse(HighScore[] response) {
                         highscores = new ArrayList<HighScore>(Arrays.asList(response));
                         scoreListView.setAdapter(new HighScoreAdapter(getContext(), (ArrayList<HighScore>) highscores));
+
+                        layoutHighScores.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
                         Toast.makeText(getContext(),"Leader board loaded. ",Toast.LENGTH_LONG).show();
                     }
                 },
@@ -79,6 +91,8 @@ public class HighScoresFragment extends Fragment {
                     @Override
                     public void onErrorResponse(VolleyError error) {
 //                        Log.v("API", error.toString());
+                        layoutHighScores.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
                         if(error instanceof NoConnectionError) {
                             Toast.makeText(getContext(),"No internet connection.",Toast.LENGTH_LONG).show();
                         } else {
