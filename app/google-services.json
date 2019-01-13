@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "771492924022",
+    "firebase_url": "https://org-esncz-challenge.firebaseio.com",
+    "project_id": "org-esncz-challenge",
+    "storage_bucket": "org-esncz-challenge.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:771492924022:android:caac8169a16a28b6",
+        "android_client_info": {
+          "package_name": "org.esncz.esnchallenge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "771492924022-tr9evh1j9j3b6iite640m68vm1olh6ah.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.esncz.esnchallenge",
+            "certificate_hash": "ebb1d9c7014d514d630b60d2b83b272f1fde4b4d"
+          }
+        },
+        {
+          "client_id": "771492924022-6gcr9qucu9e4mk306ms1ouu8vm2q1bf1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaMqA3egH-skBNA0cgpwF1WGhF-k4fOGQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "771492924022-6gcr9qucu9e4mk306ms1ouu8vm2q1bf1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
