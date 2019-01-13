@@ -170,6 +170,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         updateLocationUI();
         //getDeviceLocation();
 
+        LatLng defaultCameraLocation = new LatLng(49.7406922,15.3661319);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(defaultCameraLocation, 6.5f));
+
     }
 
     private void getLocationPermission() {
@@ -314,6 +317,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             public Map<String, String> getHeaders() {
                 HashMap<String, String> headers = new HashMap<String, String>();
                 headers.put("Content-Type", "application/x-www-form-urlencoded");
+                headers.put("Pragma", "no-cache");
+                headers.put("Cache-Control", "no-cache, no store, must-revalidate");
                 return headers;
             }
         };

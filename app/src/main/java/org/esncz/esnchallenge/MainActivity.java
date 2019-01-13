@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
 
-        loadFragment(new HighScoresFragment());
+        loadFragment(new MapFragment());
     }
 
 
