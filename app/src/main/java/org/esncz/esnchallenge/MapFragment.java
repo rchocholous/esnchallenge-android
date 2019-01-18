@@ -1,6 +1,5 @@
 package org.esncz.esnchallenge;
 
-import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -18,14 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,13 +27,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import org.esncz.esnchallenge.tools.RequestBuilder;
-import org.esncz.esnchallenge.tools.VolleyCallback;
+import org.esncz.esnchallenge.facade.BackendFacade;
+import org.esncz.esnchallenge.network.VolleyCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -50,13 +40,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.esncz.esnchallenge.model.LocationPoint;
-import org.esncz.esnchallenge.tools.GsonRequest;
 
 /**
  * @author chochy
  * Date: 2019-01-02
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
+
+    private BackendFacade facade;
 
     public static int locationsCount;
 
@@ -101,13 +92,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        this.facade = new BackendFacade(getActivity().getApplicationContext(), "MAP");
         buttonCheck = this.getActivity().findViewById(R.id.button_check);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        VolleyController.getInstance(getActivity().getApplicationContext()).getRequestQueue().cancelAll("MAP");
+        this.facade.cancelRequests();
     }
 
     @Override
@@ -272,10 +264,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void callLocationsEndpoint() {
-        RequestBuilder<LocationPoint[]> builder = new RequestBuilder<>(
-                Request.Method.GET,
-                MainActivity.API_URL + "/api/location",
-                LocationPoint[].class,
+        this.facade.sendGetLocations(
                 new VolleyCallback<LocationPoint[]>() {
                     @Override
                     public void onSuccess(LocationPoint[] result) throws JSONException {
@@ -294,21 +283,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     public void onError(String result) throws Exception {
                         Toast.makeText(getContext(),"Failed to load locations.",Toast.LENGTH_LONG).show();
                     }
-                })
-                .withHeaders("Content-Type", "application/x-www-form-urlencoded")
-                .withHeaders("Pragma", "no-cache")
-                .withHeaders("Cache-Control", "no-cache, no store, must-revalidate")
-                .withTag("MAP");
+                }
+        );
 
-        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(builder.build());
     }
 
     private void callLocationCheckEndpoint(final LocationPoint location) {
         if(((MainActivity)getActivity()).getAccessToken() != null && !((MainActivity)getActivity()).getAccessToken().isEmpty()) {
-            RequestBuilder<JSONObject> builder = new RequestBuilder<>(
-                    Request.Method.POST,
-                    MainActivity.API_URL + "/api/location",
-                    JSONObject.class,
+            this.facade.sendCheckLocation(((MainActivity) getActivity()).getAccessToken(), location,
                     new VolleyCallback<JSONObject>() {
                         @Override
                         public void onSuccess(JSONObject result) throws JSONException {
@@ -319,12 +301,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         public void onError(String result) throws Exception {
                             Toast.makeText(getContext(),"Failed to check location.",Toast.LENGTH_LONG).show();
                         }
-                    })
-                    .withHeaders("X-Auth-Token", ((MainActivity) getActivity()).getAccessToken())
-                    .withParams("location", String.valueOf(location.getId()))
-                    .withTag("MAP");
-
-            VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(builder.build());
+                    }
+            );
         } else {
             Toast.makeText(getActivity(), "Not logged in.", Toast.LENGTH_LONG).show();
         }

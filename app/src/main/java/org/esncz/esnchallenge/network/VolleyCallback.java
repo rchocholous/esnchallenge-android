@@ -1,7 +1,6 @@
-package org.esncz.esnchallenge.tools;
+package org.esncz.esnchallenge.network;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * @author chochy

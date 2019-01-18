@@ -1,17 +1,10 @@
-package org.esncz.esnchallenge.tools;
-
-import android.util.Log;
-import android.widget.Toast;
+package org.esncz.esnchallenge.network;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
-import org.esncz.esnchallenge.MainActivity;
-import org.esncz.esnchallenge.ProfileFragment;
-import org.esncz.esnchallenge.VolleyController;
-import org.esncz.esnchallenge.model.ProfileData;
 import org.json.JSONException;
 
 import java.util.HashMap;

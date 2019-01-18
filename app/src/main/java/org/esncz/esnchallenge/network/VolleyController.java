@@ -1,4 +1,4 @@
-package org.esncz.esnchallenge;
+package org.esncz.esnchallenge.network;
 
 import android.content.Context;
 

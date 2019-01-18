@@ -13,13 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
-
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
-
-    public static String API_AUTH_URL = "https://fiesta.esncz.org";
-    public static String API_URL = "https://challenge.esncz.org";
 
     public String accessToken;
 

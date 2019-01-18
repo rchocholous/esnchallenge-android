@@ -12,26 +12,15 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-
-import org.esncz.esnchallenge.tools.RequestBuilder;
-import org.esncz.esnchallenge.tools.VolleyCallback;
+import org.esncz.esnchallenge.facade.BackendFacade;
+import org.esncz.esnchallenge.network.VolleyCallback;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.esncz.esnchallenge.model.HighScore;
-import org.esncz.esnchallenge.tools.GsonRequest;
 import org.esncz.esnchallenge.tools.HighScoreAdapter;
 
 /**
@@ -39,6 +28,8 @@ import org.esncz.esnchallenge.tools.HighScoreAdapter;
  * Date: 2019-01-02
  */
 public class HighScoresFragment extends Fragment {
+
+    private BackendFacade facade;
 
     private List<HighScore> highscores;
     private HighScoreAdapter scoreAdapter;
@@ -55,6 +46,8 @@ public class HighScoresFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        this.facade = new BackendFacade(getActivity().getApplicationContext(), "SCORES");
+
         progressBar = this.getActivity().findViewById(R.id.progress_bar);
         layoutHighScores = this.getActivity().findViewById(R.id.layout_highscores);
 
@@ -64,7 +57,7 @@ public class HighScoresFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        VolleyController.getInstance(getActivity().getApplicationContext()).getRequestQueue().cancelAll("SCORES");
+        this.facade.cancelRequests();
     }
 
     private void callHighScoresEndpoint() {
@@ -72,10 +65,7 @@ public class HighScoresFragment extends Fragment {
         layoutHighScores.setVisibility(View.GONE);
         final ListView scoreListView = (ListView) this.getActivity().findViewById(R.id.listview_scores);
 
-        RequestBuilder<HighScore[]> builder = new RequestBuilder<>(
-                Request.Method.GET,
-                MainActivity.API_URL + "/api/leaderboards?limit=10&offset=0",
-                HighScore[].class,
+        this.facade.sendGetHighScores(10,0,
                 new VolleyCallback<HighScore[]>() {
                     @Override
                     public void onSuccess(HighScore[] result) throws JSONException {
@@ -93,13 +83,8 @@ public class HighScoresFragment extends Fragment {
                         progressBar.setVisibility(View.GONE);
                         Toast.makeText(getContext(),"Failed to load leadersboard.",Toast.LENGTH_LONG).show();
                     }
-                })
-                .withHeaders("Content-Type", "application/x-www-form-urlencoded")
-                .withHeaders("Pragma", "no-cache")
-                .withHeaders("Cache-Control", "no-cache, no store, must-revalidate")
-                .withTag("SCORES");
+        });
 
-        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(builder.build());
     }
 
 }

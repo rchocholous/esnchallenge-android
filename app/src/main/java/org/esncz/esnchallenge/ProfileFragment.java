@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,29 +20,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NoConnectionError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.esncz.esnchallenge.tools.RequestBuilder;
-import org.esncz.esnchallenge.tools.VolleyCallback;
+import org.esncz.esnchallenge.facade.BackendFacade;
+import org.esncz.esnchallenge.network.VolleyCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.esncz.esnchallenge.model.LocationPoint;
 import org.esncz.esnchallenge.model.ProfileData;
-import org.esncz.esnchallenge.model.University;
-import org.esncz.esnchallenge.tools.GsonRequest;
 import org.esncz.esnchallenge.tools.VisitedLocationsAdapter;
 
 /**
@@ -51,6 +36,8 @@ import org.esncz.esnchallenge.tools.VisitedLocationsAdapter;
  * Date: 2019-01-02
  */
 public class ProfileFragment extends Fragment {
+
+    private BackendFacade facade;
 
     private Button buttonLogin, buttonLogout;
     private ImageButton buttonSettingsOpen, buttonSettingsClose;
@@ -91,9 +78,8 @@ public class ProfileFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        this.facade = new BackendFacade(getActivity().getApplicationContext(), "PROFILE");
         drawLogo();//TODO: Why I need to do this??
-
-//        queue = MainActivity.getQueueInstance(this.getActivity());
 
         TextView link = (TextView) this.getActivity().findViewById(R.id.text_link_create);
         link.setMovementMethod(LinkMovementMethod.getInstance());
@@ -185,14 +171,11 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        VolleyController.getInstance(getActivity().getApplicationContext()).getRequestQueue().cancelAll("PROFILE");
+        this.facade.cancelRequests();
     }
 
     private void callAccessTokenEndpoint() {
-        RequestBuilder<JSONObject> builder = new RequestBuilder<>(
-                Request.Method.POST,
-                MainActivity.API_AUTH_URL + "/api/auth",
-                JSONObject.class,
+        this.facade.sendGetAccessToken(fieldEmail.getText().toString(), fieldPassword.getText().toString(),
                 new VolleyCallback<JSONObject>() {
                     @Override
                     public void onSuccess(JSONObject result) throws JSONException {
@@ -212,43 +195,30 @@ public class ProfileFragment extends Fragment {
                         showLayout(LayoutEnum.LOGIN);
                         Toast.makeText(getContext(), "Error during login." + result, Toast.LENGTH_LONG).show();
                     }
-                })
-                .withHeaders("Content-Type", "application/x-www-form-urlencoded")
-                .withParams("email", fieldEmail.getText().toString())
-                .withParams("password", fieldPassword.getText().toString())
-                .withPriority(Request.Priority.IMMEDIATE)
-                .withTag("PROFILE");
+                }
+        );
 
-        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(builder.build());
     }
 
     private void callProfileEndpoint() {
-        RequestBuilder<ProfileData> builder = new RequestBuilder<>(
-                Request.Method.GET,
-                MainActivity.API_URL + "/api/profile",
-                ProfileData.class,
+        this.facade.sendGetProfile(((MainActivity) getActivity()).getAccessToken(),
                 new VolleyCallback<ProfileData>() {
-            @Override
-            public void onSuccess(ProfileData result) {
-                ProfileFragment.profileData = result;
-                ProfileFragment.this.populateProfileData(ProfileFragment.profileData);
-                showLayout(LayoutEnum.PROFILE);
-                Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
-            }
+                    @Override
+                    public void onSuccess(ProfileData result) {
+                        ProfileFragment.profileData = result;
+                        ProfileFragment.this.populateProfileData(ProfileFragment.profileData);
+                        showLayout(LayoutEnum.PROFILE);
+                        Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
+                    }
 
-            @Override
-            public void onError(String result) throws Exception {
-                showLayout(LayoutEnum.LOGIN);
-                Toast.makeText(getContext(), "Failed to load profile data.", Toast.LENGTH_LONG).show();
-            }
-        })
-                .withHeaders("X-Auth-Token", ((MainActivity) getActivity()).getAccessToken())
-                .withHeaders("Pragma", "no-cache")
-                .withHeaders("Cache-Control", "no-cache, no store, must-revalidate")
-                .withPriority(Request.Priority.IMMEDIATE)
-                .withTag("PROFILE");
+                    @Override
+                    public void onError(String result) throws Exception {
+                        showLayout(LayoutEnum.LOGIN);
+                        Toast.makeText(getContext(), "Failed to load profile data.", Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
 
-        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(builder.build());
     }
 
 
