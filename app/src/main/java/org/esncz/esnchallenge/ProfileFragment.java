@@ -31,6 +31,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.esncz.esnchallenge.tools.RequestBuilder;
+import org.esncz.esnchallenge.tools.VolleyCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -138,7 +140,7 @@ public class ProfileFragment extends Fragment {
                     MainActivity.hideKeyboard(getActivity());
                 }
 
-                loadAccessToken();
+                callAccessTokenEndpoint();
             }
         });
 
@@ -186,104 +188,69 @@ public class ProfileFragment extends Fragment {
         VolleyController.getInstance(getActivity().getApplicationContext()).getRequestQueue().cancelAll("PROFILE");
     }
 
-    private void loadAccessToken() {
-
-        StringRequest request = new StringRequest(
+    private void callAccessTokenEndpoint() {
+        RequestBuilder<JSONObject> builder = new RequestBuilder<>(
                 Request.Method.POST,
                 MainActivity.API_AUTH_URL + "/api/auth",
-                new Response.Listener<String>() {
+                JSONObject.class,
+                new VolleyCallback<JSONObject>() {
                     @Override
-                    public void onResponse(String responseString) {
-                        JSONObject response;
-                        try {
-                            response = new JSONObject(responseString);
-                            ((MainActivity)getActivity()).setAccessToken(response.getString("access_token"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            showLayout(LayoutEnum.LOGIN);
-                            Toast.makeText(getContext(),"Login failed.",Toast.LENGTH_LONG).show();
+                    public void onSuccess(JSONObject result) throws JSONException {
+                        if(!result.isNull("access_token")) {
+                            ((MainActivity)getActivity()).setAccessToken(result.getString("access_token"));
+                        } else {
+                            try {
+                                this.onError("Error: access_token is null!");
+                            } catch (Exception ignored) { }
                         }
 
-                        loadProfileData();
+                        callProfileEndpoint();
                     }
-                },
-                new Response.ErrorListener() {
+
                     @Override
-                    public void onErrorResponse(VolleyError error) {
-//                        Log.v("API", error.toString());
+                    public void onError(String result) throws Exception {
                         showLayout(LayoutEnum.LOGIN);
-                        if(error instanceof NoConnectionError) {
-                            Toast.makeText(getContext(),"No internet connection.",Toast.LENGTH_LONG).show();
-                        } else if(error instanceof AuthFailureError) {
-                            Toast.makeText(getContext(),"Incorrect credentials.",Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(getContext(),error.toString(),Toast.LENGTH_LONG).show();
-                        }
+                        Toast.makeText(getContext(), "Error during login." + result, Toast.LENGTH_LONG).show();
                     }
                 })
-        {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/x-www-form-urlencoded");
-                return headers;
-            }
-            @Override
-            public Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<String, String>();
-                params.put("email", fieldEmail.getText().toString());
-                params.put("password", fieldPassword.getText().toString());
-                return params;
-            }
-            @Override
-            public Priority getPriority() {
-                return Priority.IMMEDIATE;
-            }
-        };
-        request.setTag("PROFILE");
-        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
+                .withHeaders("Content-Type", "application/x-www-form-urlencoded")
+                .withParams("email", fieldEmail.getText().toString())
+                .withParams("password", fieldPassword.getText().toString())
+                .withPriority(Request.Priority.IMMEDIATE)
+                .withTag("PROFILE");
 
+        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(builder.build());
     }
 
-    private void loadProfileData() {
-
-        GsonRequest<ProfileData> request = new GsonRequest<ProfileData>(
+    private void callProfileEndpoint() {
+        RequestBuilder<ProfileData> builder = new RequestBuilder<>(
                 Request.Method.GET,
                 MainActivity.API_URL + "/api/profile",
                 ProfileData.class,
-                new Response.Listener<ProfileData>() {
-                    @Override
-                    public void onResponse(ProfileData response) {
-//                        Log.v("API", response.toString());
-
-                        ProfileFragment.profileData = response;
-                        ProfileFragment.this.populateProfileData(ProfileFragment.profileData);
-
-
-                        showLayout(LayoutEnum.PROFILE);
-                        Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-//                        Log.v("API", error.toString());
-                        showLayout(LayoutEnum.LOGIN);
-                        Toast.makeText(getContext(), "Failed to load profile data.", Toast.LENGTH_LONG).show();
-                    }
-                }) {
+                new VolleyCallback<ProfileData>() {
             @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("X-Auth-Token", ((MainActivity) getActivity()).getAccessToken());
-                return headers;
+            public void onSuccess(ProfileData result) {
+                ProfileFragment.profileData = result;
+                ProfileFragment.this.populateProfileData(ProfileFragment.profileData);
+                showLayout(LayoutEnum.PROFILE);
+                Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
             }
-        };
-        request.setPriority(Request.Priority.IMMEDIATE);
-        request.setTag("PROFILE");
-        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
 
+            @Override
+            public void onError(String result) throws Exception {
+                showLayout(LayoutEnum.LOGIN);
+                Toast.makeText(getContext(), "Failed to load profile data.", Toast.LENGTH_LONG).show();
+            }
+        })
+                .withHeaders("X-Auth-Token", ((MainActivity) getActivity()).getAccessToken())
+                .withHeaders("Pragma", "no-cache")
+                .withHeaders("Cache-Control", "no-cache, no store, must-revalidate")
+                .withPriority(Request.Priority.IMMEDIATE)
+                .withTag("PROFILE");
+
+        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(builder.build());
     }
+
 
     private void populateProfileData(ProfileData profile) {
         if(profile != null) {
@@ -343,4 +310,5 @@ public class ProfileFragment extends Fragment {
         PROFILE,
         SETTINGS;
     }
+
 }

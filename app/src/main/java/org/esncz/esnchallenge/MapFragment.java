@@ -36,10 +36,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.esncz.esnchallenge.tools.RequestBuilder;
+import org.esncz.esnchallenge.tools.VolleyCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -111,7 +114,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        loadLocations();
+        callLocationsEndpoint();
 
         buttonCheck.setVisibility(View.VISIBLE);
         buttonCheck.setOnClickListener(new View.OnClickListener() {
@@ -143,7 +146,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                                 if (location.isInsideRadius(actual)) {//TODO: Works only if radius is always same
                                     //TODO: locations.get(list.get(0).getTitle()).getCircle().setFillColor(0x7FA0A500);// Only if is inside range
                                     checked = true;
-                                    locationCheck(location);
+                                    callLocationCheckEndpoint(location);
                                 } else {
                                     break;
                                 }
@@ -268,20 +271,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void loadLocations() {
-
-        GsonRequest<LocationPoint[]> request = new GsonRequest<LocationPoint[]>(
+    private void callLocationsEndpoint() {
+        RequestBuilder<LocationPoint[]> builder = new RequestBuilder<>(
                 Request.Method.GET,
                 MainActivity.API_URL + "/api/location",
                 LocationPoint[].class,
-                new Response.Listener<LocationPoint[]>() {
+                new VolleyCallback<LocationPoint[]>() {
                     @Override
-                    public void onResponse(LocationPoint[] response) {
-//                        Log.v("API", response.toString());
+                    public void onSuccess(LocationPoint[] result) throws JSONException {
                         locations.clear();
 
-                        //TODO: save data
-                        for(LocationPoint location : response) {
+                        for(LocationPoint location : result) {
                             locations.put(location.getTitle(),location);
                         }
                         locationsCount = locations.size();
@@ -289,82 +289,45 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
                         Toast.makeText(getContext(),"Locations loaded.",Toast.LENGTH_LONG).show();
                     }
-                },
-                new Response.ErrorListener() {
+
                     @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.v("API", error.toString());
+                    public void onError(String result) throws Exception {
                         Toast.makeText(getContext(),"Failed to load locations.",Toast.LENGTH_LONG).show();
                     }
                 })
-        {
-            @Override
-            public Map<String, String> getHeaders() {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/x-www-form-urlencoded");
-                headers.put("Pragma", "no-cache");
-                headers.put("Cache-Control", "no-cache, no store, must-revalidate");
-                return headers;
-            }
-        };
-        request.setTag("MAP");
-        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
+                .withHeaders("Content-Type", "application/x-www-form-urlencoded")
+                .withHeaders("Pragma", "no-cache")
+                .withHeaders("Cache-Control", "no-cache, no store, must-revalidate")
+                .withTag("MAP");
 
+        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(builder.build());
     }
 
-
-
-    private void locationCheck(final LocationPoint location) {
+    private void callLocationCheckEndpoint(final LocationPoint location) {
         if(((MainActivity)getActivity()).getAccessToken() != null && !((MainActivity)getActivity()).getAccessToken().isEmpty()) {
-
-            StringRequest request = new StringRequest(
+            RequestBuilder<JSONObject> builder = new RequestBuilder<>(
                     Request.Method.POST,
                     MainActivity.API_URL + "/api/location",
-                    new Response.Listener<String>() {
+                    JSONObject.class,
+                    new VolleyCallback<JSONObject>() {
                         @Override
-                        public void onResponse(String responseString) {
-                            JSONObject response = null;
-                            try {
-                                response = new JSONObject(responseString);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-//                            Log.v("API", response.toString());
-
-                            //TODO: Do something
-                            Toast.makeText(getActivity(), response.toString(), Toast.LENGTH_LONG).show();
+                        public void onSuccess(JSONObject result) throws JSONException {
+                            Toast.makeText(getActivity(), result.toString(), Toast.LENGTH_LONG).show();
                         }
-                    },
-                    new Response.ErrorListener() {
+
                         @Override
-                        public void onErrorResponse(VolleyError error) {
-//                            Log.v("API", error.toString());
-                            if(error instanceof NoConnectionError) {
-                                Toast.makeText(getContext(),"No internet connection.",Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
-                            }
+                        public void onError(String result) throws Exception {
+                            Toast.makeText(getContext(),"Failed to check location.",Toast.LENGTH_LONG).show();
                         }
-                    }) {
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    HashMap<String, String> headers = new HashMap<String, String>();
-                    headers.put("X-Auth-Token", ((MainActivity) getActivity()).getAccessToken());
-                    return headers;
-                }
+                    })
+                    .withHeaders("X-Auth-Token", ((MainActivity) getActivity()).getAccessToken())
+                    .withParams("location", String.valueOf(location.getId()))
+                    .withTag("MAP");
 
-                @Override
-                public Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<String, String>();
-                    params.put("location", String.valueOf(location.getId()));
-                    return params;
-                }
-            };
-            request.setTag("MAP");
-            VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
-
+            VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(builder.build());
         } else {
             Toast.makeText(getActivity(), "Not logged in.", Toast.LENGTH_LONG).show();
         }
     }
+
 }

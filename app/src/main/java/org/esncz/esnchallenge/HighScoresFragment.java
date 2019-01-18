@@ -19,6 +19,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 
+import org.esncz.esnchallenge.tools.RequestBuilder;
+import org.esncz.esnchallenge.tools.VolleyCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,7 +58,7 @@ public class HighScoresFragment extends Fragment {
         progressBar = this.getActivity().findViewById(R.id.progress_bar);
         layoutHighScores = this.getActivity().findViewById(R.id.layout_highscores);
 
-        loadHighScores();
+        callHighScoresEndpoint();
     }
 
     @Override
@@ -65,50 +67,39 @@ public class HighScoresFragment extends Fragment {
         VolleyController.getInstance(getActivity().getApplicationContext()).getRequestQueue().cancelAll("SCORES");
     }
 
-    private void loadHighScores() {
-
+    private void callHighScoresEndpoint() {
         progressBar.setVisibility(View.VISIBLE);
         layoutHighScores.setVisibility(View.GONE);
-
         final ListView scoreListView = (ListView) this.getActivity().findViewById(R.id.listview_scores);
 
-        GsonRequest<HighScore[]> request = new GsonRequest<HighScore[]>(
-                Request.Method.POST,
+        RequestBuilder<HighScore[]> builder = new RequestBuilder<>(
+                Request.Method.GET,
                 MainActivity.API_URL + "/api/leaderboards?limit=10&offset=0",
                 HighScore[].class,
-                new Response.Listener<HighScore[]>() {
+                new VolleyCallback<HighScore[]>() {
                     @Override
-                    public void onResponse(HighScore[] response) {
-                        highscores = new ArrayList<HighScore>(Arrays.asList(response));
+                    public void onSuccess(HighScore[] result) throws JSONException {
+                        highscores = new ArrayList<>(Arrays.asList(result));
                         scoreListView.setAdapter(new HighScoreAdapter(getContext(), (ArrayList<HighScore>) highscores));
 
                         layoutHighScores.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
                         Toast.makeText(getContext(),"Leader board loaded. ",Toast.LENGTH_LONG).show();
                     }
-                },
-                new Response.ErrorListener() {
+
                     @Override
-                    public void onErrorResponse(VolleyError error) {
-//                        Log.v("API", error.toString());
+                    public void onError(String result) throws Exception {
                         layoutHighScores.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
-                        if(error instanceof NoConnectionError) {
-                            Toast.makeText(getContext(),"No internet connection.",Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(getContext(),error.toString(),Toast.LENGTH_LONG).show();
-                        }
+                        Toast.makeText(getContext(),"Failed to load leadersboard.",Toast.LENGTH_LONG).show();
                     }
-                });
-//        {
-//            @Override
-//            public Map<String, String> getHeaders() throws AuthFailureError {
-//                HashMap<String, String> headers = new HashMap<String, String>();
-//                headers.put("X-Auth-Token", ((MainActivity) getActivity()).getAccessToken());
-//                return headers;
-//            }
-//        };
-        request.setTag("SCORES");
-        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(request);
+                })
+                .withHeaders("Content-Type", "application/x-www-form-urlencoded")
+                .withHeaders("Pragma", "no-cache")
+                .withHeaders("Cache-Control", "no-cache, no store, must-revalidate")
+                .withTag("SCORES");
+
+        VolleyController.getInstance(getActivity().getApplicationContext()).addToRequestQueue(builder.build());
     }
+
 }

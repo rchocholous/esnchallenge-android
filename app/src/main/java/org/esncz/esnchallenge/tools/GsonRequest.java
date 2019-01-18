@@ -10,6 +10,9 @@ import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.toolbox.HttpHeaderParser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -28,7 +31,7 @@ public class GsonRequest<T> extends Request<T> {
                        Class<T> clazz,
                        Listener<T> listener,
                        Response.ErrorListener errorListener) {
-        super(Method.GET, url, errorListener);
+        super(method, url, errorListener);
         this.mClazz = clazz;
         this.mListener = listener;
         mGson = new Gson();
@@ -41,7 +44,7 @@ public class GsonRequest<T> extends Request<T> {
                        Response.Listener<T> listener,
                        Response.ErrorListener errorListener,
                        Gson gson) {
-        super(Method.GET, url, errorListener);
+        super(method, url, errorListener);
         this.mClazz = clazz;
         this.mListener = listener;
         mGson = gson;
@@ -66,11 +69,14 @@ public class GsonRequest<T> extends Request<T> {
     protected Response<T> parseNetworkResponse(NetworkResponse response) {
         try {
             String json = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-            return Response.success(mGson.fromJson(json, mClazz),
-                    HttpHeaderParser.parseCacheHeaders(response));
-        } catch (UnsupportedEncodingException e) {
-            return Response.error(new ParseError(e));
-        } catch (JsonSyntaxException e) {
+            if(mClazz == String.class) {
+                return Response.success((T)json, HttpHeaderParser.parseCacheHeaders(response));
+            } else if(mClazz == JSONObject.class) {
+                return Response.success((T)new JSONObject(json), HttpHeaderParser.parseCacheHeaders(response));
+            } else {
+                return Response.success(mGson.fromJson(json, mClazz), HttpHeaderParser.parseCacheHeaders(response));
+            }
+        } catch (UnsupportedEncodingException | JsonSyntaxException | JSONException e) {
             return Response.error(new ParseError(e));
         }
     }
