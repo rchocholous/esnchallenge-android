@@ -13,7 +13,7 @@ import com.android.volley.toolbox.Volley;
 public class VolleyController {
     private static VolleyController instance;
     private RequestQueue queue;
-    private static Context mCtx;
+    private Context mCtx;
 
     public static synchronized VolleyController getInstance(Context context) {
         if(instance == null) {

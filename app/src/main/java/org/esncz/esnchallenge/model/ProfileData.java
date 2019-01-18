@@ -15,6 +15,7 @@ public class ProfileData implements Serializable {
     private String gender;
     private String email;
     private University university = new University();
+
     @SerializedName("locations")
     private List<LocationPoint> checkedLocations;
 

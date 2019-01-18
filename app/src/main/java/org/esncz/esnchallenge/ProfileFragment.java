@@ -60,7 +60,6 @@ public class ProfileFragment extends Fragment {
 
 
     private ListView locationsListView;
-//    private RequestQueue queue;
 
     public static ProfileData profileData;//TODO: static = ugly solution. Investigate on how to use "Bundle"
 
@@ -148,7 +147,6 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 ProfileFragment.profileData = null;
                 ((MainActivity)getActivity()).setAccessToken(null);
-//                showLoginView();
                 showLayout(LayoutEnum.LOGIN);
             }
         });
@@ -175,11 +173,9 @@ public class ProfileFragment extends Fragment {
         super.onResume();
 
         if(isLoggedIn()) {
-//            showProfileView();
             showLayout(LayoutEnum.PROFILE);
             populateProfileData(ProfileFragment.profileData);
         } else {
-//            showLoginView();
             showLayout(LayoutEnum.LOGIN);
         }
     }
@@ -188,45 +184,6 @@ public class ProfileFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         VolleyController.getInstance(getActivity().getApplicationContext()).getRequestQueue().cancelAll("PROFILE");
-    }
-
-    private void showLayout(LayoutEnum layout) {
-        if(layout == null) {
-            layout = LayoutEnum.NONE;
-        }
-        progressBar.setVisibility(View.GONE);
-        switch (layout) {
-            case PROFILE:
-                layoutLogin.setVisibility(View.GONE);
-                layoutProfile.setVisibility(View.VISIBLE);
-                layoutSettings.setVisibility(View.GONE);
-                break;
-            case SETTINGS:
-                layoutLogin.setVisibility(View.GONE);
-                layoutProfile.setVisibility(View.GONE);
-                layoutSettings.setVisibility(View.VISIBLE);
-                break;
-            case LOGIN:
-                layoutLogin.setVisibility(View.VISIBLE);
-                layoutProfile.setVisibility(View.GONE);
-                layoutSettings.setVisibility(View.GONE);
-                break;
-            default:
-                layoutLogin.setVisibility(View.GONE);
-                layoutProfile.setVisibility(View.GONE);
-                layoutSettings.setVisibility(View.GONE);
-                break;
-        }
-    }
-
-    private void showProfileView() {
-        layoutLogin.setVisibility(View.GONE);
-        layoutProfile.setVisibility(View.VISIBLE);
-    }
-
-    private void showLoginView() {
-        layoutLogin.setVisibility(View.VISIBLE);
-        layoutProfile.setVisibility(View.GONE);
     }
 
     private void loadAccessToken() {
@@ -246,12 +203,8 @@ public class ProfileFragment extends Fragment {
                             showLayout(LayoutEnum.LOGIN);
                             Toast.makeText(getContext(),"Login failed.",Toast.LENGTH_LONG).show();
                         }
-//                        Log.v("API", response.toString());
 
                         loadProfileData();
-
-//                        showProfileView();
-//                        Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
                     }
                 },
                 new Response.ErrorListener() {
@@ -292,11 +245,6 @@ public class ProfileFragment extends Fragment {
 
     }
 
-
-//    private void makeRequest(String url, VolleyCallback callback) {
-//
-//    }
-
     private void loadProfileData() {
 
         GsonRequest<ProfileData> request = new GsonRequest<ProfileData>(
@@ -313,7 +261,6 @@ public class ProfileFragment extends Fragment {
 
 
                         showLayout(LayoutEnum.PROFILE);
-//                        Toast.makeText(getContext(), "Profile data loaded.", Toast.LENGTH_LONG).show();
                         Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
                     }
                 },
@@ -359,6 +306,35 @@ public class ProfileFragment extends Fragment {
 
     public static boolean isLoggedIn() {
         return ProfileFragment.profileData != null;
+    }
+
+    private void showLayout(LayoutEnum layout) {
+        if(layout == null) {
+            layout = LayoutEnum.NONE;
+        }
+        progressBar.setVisibility(View.GONE);
+        switch (layout) {
+            case PROFILE:
+                layoutLogin.setVisibility(View.GONE);
+                layoutProfile.setVisibility(View.VISIBLE);
+                layoutSettings.setVisibility(View.GONE);
+                break;
+            case SETTINGS:
+                layoutLogin.setVisibility(View.GONE);
+                layoutProfile.setVisibility(View.GONE);
+                layoutSettings.setVisibility(View.VISIBLE);
+                break;
+            case LOGIN:
+                layoutLogin.setVisibility(View.VISIBLE);
+                layoutProfile.setVisibility(View.GONE);
+                layoutSettings.setVisibility(View.GONE);
+                break;
+            default:
+                layoutLogin.setVisibility(View.GONE);
+                layoutProfile.setVisibility(View.GONE);
+                layoutSettings.setVisibility(View.GONE);
+                break;
+        }
     }
 
     private enum LayoutEnum {

@@ -158,4 +158,17 @@ public class LocationPoint implements Serializable {
             circle.setFillColor(ResourcesCompat.getColor(this.resources, R.color.colorAccentTransparent, null));
         }
     }
+
+    @Override
+    public String toString() {
+        return "LocationPoint{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", type='" + type + '\'' +
+                ", lat=" + lat +
+                ", lng=" + lng +
+                ", radius=" + radius +
+                ", checked=" + checked +
+                '}';
+    }
 }

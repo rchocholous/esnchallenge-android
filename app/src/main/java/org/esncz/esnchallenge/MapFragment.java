@@ -57,8 +57,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     public static int locationsCount;
 
-    private static final int DEFAULT_ZOOM = 15;
-//    private RequestQueue queue;
+    private static final float DEFAULT_ZOOM = 6.5f;
 
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
@@ -89,7 +88,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
         mapFragment.getMapAsync(this);
 
-        // Construct a FusedLocationProviderClient.
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
 
@@ -99,8 +97,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-//        queue = MainActivity.getQueueInstance(this.getActivity());
 
         buttonCheck = this.getActivity().findViewById(R.id.button_check);
     }
@@ -116,7 +112,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
 
         loadLocations();
-//        addAllLocations();
 
         buttonCheck.setVisibility(View.VISIBLE);
         buttonCheck.setOnClickListener(new View.OnClickListener() {
@@ -168,10 +163,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         getLocationPermission();
         updateLocationUI();
-        //getDeviceLocation();
 
         LatLng defaultCameraLocation = new LatLng(49.7406922,15.3661319);
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(defaultCameraLocation, 6.5f));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(defaultCameraLocation, DEFAULT_ZOOM));
 
     }
 
@@ -229,10 +223,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void getDeviceLocation() {
-        /*
-         * Get the best and most recent location of the device, which may be null in rare
-         * cases when a location is not available.
-         */
         try {
             if (mLocationPermissionGranted) {
                 Task locationResult = fusedLocationClient.getLastLocation();
@@ -242,14 +232,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         if (task.isSuccessful()) {
                             // Set the map's camera position to the current location of the device.
                             lastKnownLocation = (Location)task.getResult();
-                            /*mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(lastKnownLocation.getLatitude(),
-                                            lastKnownLocation.getLongitude()), DEFAULT_ZOOM));*/
                         } else {
                             Log.d("LOCATION", "Current location is null. Using defaults.");
                             Log.e("LOCATION", "Exception: %s", task.getException());
-//                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
-//                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
                         }
                     }
                 });
