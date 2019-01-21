@@ -21,6 +21,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingLeft="8dp"
+        android:paddingTop="8dp"
         android:paddingRight="8dp"
         android:visibility="gone">
 
@@ -29,6 +30,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
+            android:background="?android:attr/colorBackground"
+            android:padding="4dp"
             app:srcCompat="@drawable/ic_close" />
 
         <ScrollView
@@ -64,7 +67,7 @@
                     android:drawableLeft="@drawable/ic_orange_web"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
-                    android:text="Check yout official site" />
+                    android:text="Check out official site" />
 
                 <TextView
                     android:id="@+id/textView10"
@@ -104,6 +107,7 @@
                     android:drawableLeft="@drawable/ic_orange_star"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
+                    android:onClick="rateApplication"
                     android:text="Rate the app" />
 
                 <TextView
@@ -149,16 +153,30 @@
         android:layout_height="match_parent"
         android:visibility="visible">
 
+        <ImageButton
+            android:id="@+id/button_settings_open2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="?android:attr/colorBackground"
+            android:padding="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_settings" />
+
         <ImageView
             android:id="@+id/imageLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:contentDescription="@string/erasmus_student_network"
             android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/edit_text_password"
+            app:layout_constraintBottom_toTopOf="@+id/edit_text_email"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -246,6 +264,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingLeft="8dp"
+        android:paddingTop="8dp"
         android:paddingRight="8dp"
         android:visibility="gone">
 
@@ -254,6 +273,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
+            android:background="?android:attr/colorBackground"
+            android:padding="4dp"
             app:srcCompat="@drawable/ic_settings" />
 
         <ScrollView

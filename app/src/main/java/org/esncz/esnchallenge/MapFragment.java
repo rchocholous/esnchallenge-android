@@ -1,7 +1,9 @@
 package org.esncz.esnchallenge;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -72,8 +74,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         locations = new HashMap<>();
 
-        mapFragment = (SupportMapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.map);
+        mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
             FragmentManager manager = getFragmentManager();
             FragmentTransaction transaction = manager.beginTransaction();
@@ -83,7 +84,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-
 
         return view;
     }
@@ -113,46 +113,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 getDeviceLocation();
-                //Find nearest location (50.3722211,17.1849737)
-                final Location actual = lastKnownLocation; //new Location("");
-//                actual.setLatitude(17.1849737);
-//                actual.setLongitude(50.3722211);
-
-                if(actual != null) {
-                    if(locations != null && !locations.isEmpty()) {
-                        List<LocationPoint> list = new ArrayList<>(locations.values());
-                        Collections.sort(list, new Comparator<LocationPoint>() {
-                            @Override
-                            public int compare(LocationPoint o1, LocationPoint o2) {
-                                return (int) (o1.distanceTo(actual) - (o2.distanceTo(actual)));
-                            }
-                        });
-
-                        for (LocationPoint l : list) {
-                            Log.v("SORTED", l.getTitle() + ", distance: " + l.distanceTo(actual));
-                        }
-
-                        boolean checked = false;
-                        if (!list.isEmpty()) {
-                            for (LocationPoint location : list) {
-                                if (location.isInsideRadius(actual)) {//TODO: Works only if radius is always same
-                                    //TODO: locations.get(list.get(0).getTitle()).getCircle().setFillColor(0x7FA0A500);// Only if is inside range
-                                    checked = true;
-                                    callLocationCheckEndpoint(location);
-                                } else {
-                                    break;
-                                }
-                            }
-                            if (!checked) {
-                                Toast.makeText(getContext(), "Too far from any location.", Toast.LENGTH_LONG).show();
-                            }
-                        }
-
-                    } else {
-                        Toast.makeText(getContext(), "You need internet to load locations.", Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                }
             }
         });
 
@@ -162,6 +122,50 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         LatLng defaultCameraLocation = new LatLng(49.7406922,15.3661319);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(defaultCameraLocation, DEFAULT_ZOOM));
 
+    }
+
+    private void calculateLocationDistances() {
+        //Find nearest location (50.3722211,17.1849737)
+        final Location actual = lastKnownLocation; //new Location("");
+//                actual.setLatitude(17.1849737);
+//                actual.setLongitude(50.3722211);
+
+        if(actual != null) {
+            if(locations != null && !locations.isEmpty()) {
+                List<LocationPoint> list = new ArrayList<>(locations.values());
+                Collections.sort(list, new Comparator<LocationPoint>() {
+                    @Override
+                    public int compare(LocationPoint o1, LocationPoint o2) {
+                        return (int) (o1.distanceTo(actual) - (o2.distanceTo(actual)));
+                    }
+                });
+
+                for (LocationPoint l : list) {
+                    Log.v("SORTED", l.getTitle() + ", distance: " + l.distanceTo(actual));
+                }
+
+                boolean checked = false;
+                if (!list.isEmpty()) {
+                    for (LocationPoint location : list) {
+                        if (location.isInsideRadius(actual)) {//TODO: Works only if radius is always same
+                            //TODO: locations.get(list.get(0).getTitle()).getCircle().setFillColor(0x7FA0A500);// Only if is inside range
+                            checked = true;
+                            callLocationCheckEndpoint(location);
+                        } else {
+                            break;
+                        }
+                    }
+                    if (!checked) {
+                        Toast.makeText(getContext(), "Too far from any location.", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+            } else {
+                Toast.makeText(getContext(), "You need internet to load locations.", Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(getContext(), "Failed to get your location.", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void getLocationPermission() {
@@ -227,9 +231,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         if (task.isSuccessful()) {
                             // Set the map's camera position to the current location of the device.
                             lastKnownLocation = (Location)task.getResult();
+                            calculateLocationDistances();
                         } else {
                             Log.d("LOCATION", "Current location is null. Using defaults.");
                             Log.e("LOCATION", "Exception: %s", task.getException());
+                            Toast.makeText(getContext(), "Failed to get your location.", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -260,6 +266,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if(locations.containsKey(location.getTitle())) {
             locations.get(location.getTitle()).setMarker(mMap.addMarker(location.buildMarkerOptions()));
             locations.get(location.getTitle()).setCircle(mMap.addCircle(location.buildCircleOptions(getResources())));
+        }
+    }
+
+    public void rateApplication(View view) {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("market://details?id=" + this.getActivity().getPackageName())));
+        } catch (android.content.ActivityNotFoundException e) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://play.google.com/store/apps/details?id=" + this.getActivity().getPackageName())));
         }
     }
 
@@ -295,6 +311,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         @Override
                         public void onSuccess(JSONObject result) throws JSONException {
                             Toast.makeText(getActivity(), result.toString(), Toast.LENGTH_LONG).show();
+                            location.check();
+                            ProfileFragment.profileData.getCheckedLocations().add(location);
                         }
 
                         @Override

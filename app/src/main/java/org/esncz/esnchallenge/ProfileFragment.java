@@ -38,19 +38,16 @@ import org.esncz.esnchallenge.tools.VisitedLocationsAdapter;
 public class ProfileFragment extends Fragment {
 
     private BackendFacade facade;
+    public static ProfileData profileData;//TODO: static = ugly solution. Investigate on how to use "Bundle"
 
-    private Button buttonLogin, buttonLogout;
-    private ImageButton buttonSettingsOpen, buttonSettingsClose;
     private EditText fieldEmail, fieldPassword;
     private TextView textName, textEmail, textFirstName, textLastName,  textGender, textUniversity, textSection, textLocationCount;
+    private ListView locationsListView;
+
     private LinearLayout layoutProfile, layoutSettings;
     private ConstraintLayout layoutLogin;
     private ProgressBar progressBar;
 
-
-    private ListView locationsListView;
-
-    public static ProfileData profileData;//TODO: static = ugly solution. Investigate on how to use "Bundle"
 
     @Nullable
     @Override
@@ -93,10 +90,6 @@ public class ProfileFragment extends Fragment {
         layoutProfile = this.getActivity().findViewById(R.id.linear_layout_profile);
         layoutSettings = this.getActivity().findViewById(R.id.layour_settings);
 
-        buttonLogin = this.getActivity().findViewById(R.id.button_login);
-        buttonLogout = this.getActivity().findViewById(R.id.button_logout);
-        buttonSettingsOpen = this.getActivity().findViewById(R.id.button_settings_open);
-        buttonSettingsClose = this.getActivity().findViewById(R.id.button_settings_close);
 
         fieldEmail = this.getActivity().findViewById(R.id.edit_text_email);
         fieldPassword = this.getActivity().findViewById(R.id.edit_text_password);
@@ -113,6 +106,8 @@ public class ProfileFragment extends Fragment {
 
         locationsListView = (ListView) this.getActivity().findViewById(R.id.listview_visited_locations);
 
+
+        Button buttonLogin = this.getActivity().findViewById(R.id.button_login);
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -130,6 +125,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        Button buttonLogout = this.getActivity().findViewById(R.id.button_logout);
         buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -139,6 +135,7 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        ImageButton buttonSettingsOpen = this.getActivity().findViewById(R.id.button_settings_open);
         buttonSettingsOpen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,10 +143,23 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+        ImageButton buttonSettingsOpen2 = this.getActivity().findViewById(R.id.button_settings_open2);
+        buttonSettingsOpen2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLayout(LayoutEnum.SETTINGS);
+            }
+        });
+
+        ImageButton buttonSettingsClose = this.getActivity().findViewById(R.id.button_settings_close);
         buttonSettingsClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showLayout(LayoutEnum.PROFILE);
+                if(isLoggedIn()) {
+                    showLayout(LayoutEnum.PROFILE);
+                } else {
+                    showLayout(LayoutEnum.LOGIN);
+                }
             }
         });
 
