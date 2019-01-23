@@ -152,10 +152,15 @@ public class LocationPoint implements Serializable {
         this.circle = circle;
     }
 
-    public void check() {
-        this.checked = true;
-        if(circle != null) {
-            circle.setFillColor(ResourcesCompat.getColor(this.resources, R.color.colorAccentTransparent, null));
+    public boolean check() {
+        if (!this.checked) {
+            this.checked = true;
+            if (circle != null) {
+                circle.setFillColor(ResourcesCompat.getColor(this.resources, R.color.colorAccentTransparent, null));
+            }
+            return true;
+        } else {
+            return false;// Already checked response!
         }
     }
 

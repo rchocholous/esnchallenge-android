@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -54,6 +55,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public static int locationsCount;
 
     private static final float DEFAULT_ZOOM = 6.5f;
+    public static final String RESPONSE_DIALOG_TAG = "simpleMessageDialog";
 
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
@@ -63,6 +65,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
     private Location lastKnownLocation;
 
+    private ProgressBar progressBar;
     private Button buttonCheck;
 
     private Map<String, LocationPoint> locations;
@@ -88,12 +91,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         return view;
     }
 
+    private void showProgressBar(boolean isShowed) {
+        if(isShowed) {
+            progressBar.setVisibility(View.VISIBLE);
+            buttonCheck.setClickable(false);
+            mMap.getUiSettings().setAllGesturesEnabled(false);
+        } else {
+            progressBar.setVisibility(View.GONE);
+            buttonCheck.setClickable(true);
+            mMap.getUiSettings().setAllGesturesEnabled(true);
+        }
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         this.facade = new BackendFacade(getActivity().getApplicationContext(), "MAP");
         buttonCheck = this.getActivity().findViewById(R.id.button_check);
+        progressBar = this.getActivity().findViewById(R.id.progress_bar);
     }
 
     @Override
@@ -122,6 +138,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         LatLng defaultCameraLocation = new LatLng(49.7406922,15.3661319);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(defaultCameraLocation, DEFAULT_ZOOM));
 
+    private void showLocationCheckDialog(String message) {
+        SimpleMessageDialog dialog = (SimpleMessageDialog) getFragmentManager().findFragmentByTag(RESPONSE_DIALOG_TAG);
+        if(dialog == null) {
+            dialog = new SimpleMessageDialog();
+            dialog.setResponseDetails( message);
+            getFragmentManager().beginTransaction().add(dialog,RESPONSE_DIALOG_TAG).commit();
+        } else {
+            dialog.setResponseDetails(message);
+            getFragmentManager().beginTransaction().show(dialog).commit();
+        }
     }
 
     private void calculateLocationDistances() {
@@ -156,15 +182,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         }
                     }
                     if (!checked) {
-                        Toast.makeText(getContext(), "Too far from any location.", Toast.LENGTH_LONG).show();
+                        showProgressBar(false);
+                        showLocationCheckDialog("Too far from any location.");
                     }
                 }
 
             } else {
+                showProgressBar(false);
                 Toast.makeText(getContext(), "You need internet to load locations.", Toast.LENGTH_LONG).show();
             }
         } else {
-            Toast.makeText(getContext(), "Failed to get your location.", Toast.LENGTH_LONG).show();
+            showProgressBar(false);
+            Toast.makeText(getContext(), "Failed to read your location.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -223,6 +252,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private void getDeviceLocation() {
         try {
+            showProgressBar(true);
             if (mLocationPermissionGranted) {
                 Task locationResult = fusedLocationClient.getLastLocation();
                 locationResult.addOnCompleteListener(getActivity(), new OnCompleteListener() {
@@ -233,14 +263,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             lastKnownLocation = (Location)task.getResult();
                             calculateLocationDistances();
                         } else {
-                            Log.d("LOCATION", "Current location is null. Using defaults.");
-                            Log.e("LOCATION", "Exception: %s", task.getException());
+                            showProgressBar(false);
                             Toast.makeText(getContext(), "Failed to get your location.", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
             }
         } catch(SecurityException e)  {
+            showProgressBar(false);
             Log.e("Exception: %s", e.getMessage());
         }
     }
@@ -266,16 +296,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         if(locations.containsKey(location.getTitle())) {
             locations.get(location.getTitle()).setMarker(mMap.addMarker(location.buildMarkerOptions()));
             locations.get(location.getTitle()).setCircle(mMap.addCircle(location.buildCircleOptions(getResources())));
-        }
-    }
-
-    public void rateApplication(View view) {
-        try {
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("market://details?id=" + this.getActivity().getPackageName())));
-        } catch (android.content.ActivityNotFoundException e) {
-            startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("http://play.google.com/store/apps/details?id=" + this.getActivity().getPackageName())));
         }
     }
 
@@ -310,19 +330,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     new VolleyCallback<JSONObject>() {
                         @Override
                         public void onSuccess(JSONObject result) throws JSONException {
-                            Toast.makeText(getActivity(), result.toString(), Toast.LENGTH_LONG).show();
-                            location.check();
-                            ProfileFragment.profileData.getCheckedLocations().add(location);
+                            if(location.check()) {
+                                ProfileFragment.profileData.getCheckedLocations().add(location);
+                            }
+                            showProgressBar(false);
+                            showLocationCheckDialog(result.getString("message"));
                         }
 
                         @Override
                         public void onError(String result) throws Exception {
-                            Toast.makeText(getContext(),"Failed to check location.",Toast.LENGTH_LONG).show();
+                            showProgressBar(false);
+                            showLocationCheckDialog("Error: Failed to check location.");
                         }
                     }
             );
         } else {
-            Toast.makeText(getActivity(), "Not logged in.", Toast.LENGTH_LONG).show();
+            showProgressBar(false);
+            showLocationCheckDialog("You must log in to check the location and participate in challenge.");
         }
     }
 

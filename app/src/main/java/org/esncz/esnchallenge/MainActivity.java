@@ -2,8 +2,10 @@ package org.esncz.esnchallenge;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -16,6 +18,10 @@ import android.view.inputmethod.InputMethodManager;
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
     public String accessToken;
+
+    private final Fragment scoresFragment = new HighScoresFragment();
+    private final Fragment mapFragment = new MapFragment();
+    private final Fragment profileFragment = new ProfileFragment();
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -44,9 +50,19 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(this);
 
-        loadFragment(new MapFragment());
+        loadFragment(mapFragment);
     }
 
+
+    public void rateApplication(View view) {
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("market://details?id=" + this.getPackageName())));
+        } catch (android.content.ActivityNotFoundException e) {
+            startActivity(new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("http://play.google.com/store/apps/details?id=" + this.getPackageName())));
+        }
+    }
 
 
     private boolean loadFragment(Fragment fragment) {
@@ -66,14 +82,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
         switch (menuItem.getItemId()) {
             case R.id.navigation_scores:
-                fragment = new HighScoresFragment();
+                fragment = scoresFragment;
                 break;
             case R.id.navigation_map:
-                fragment = new MapFragment();
+                fragment = mapFragment;
                 break;
 
             case R.id.navigation_profile:
-                fragment = new ProfileFragment();
+                fragment = profileFragment;
                 break;
         }
         return loadFragment(fragment);
