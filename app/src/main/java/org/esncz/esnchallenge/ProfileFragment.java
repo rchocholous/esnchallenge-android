@@ -38,7 +38,7 @@ import org.esncz.esnchallenge.tools.VisitedLocationsAdapter;
 public class ProfileFragment extends Fragment {
 
     private BackendFacade facade;
-    public static ProfileData profileData;//TODO: static = ugly solution. Investigate on how to use "Bundle"
+    public static ProfileData profileData;//TODO: static = ugly solution. Use "Bundle" instead
 
     private EditText fieldEmail, fieldPassword;
     private TextView textName, textEmail, textFirstName, textLastName,  textGender, textUniversity, textSection, textLocationCount;
@@ -84,7 +84,7 @@ public class ProfileFragment extends Fragment {
         link = (TextView) this.getActivity().findViewById(R.id.text_link_reset);
         link.setMovementMethod(LinkMovementMethod.getInstance());
 
-        progressBar = this.getActivity().findViewById(R.id.progress_bar);
+        progressBar = this.getActivity().findViewById(R.id.progress_bar_profile);
 
         layoutLogin = this.getActivity().findViewById(R.id.layout_login);
         layoutProfile = this.getActivity().findViewById(R.id.linear_layout_profile);

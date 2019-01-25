@@ -26,6 +26,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -50,6 +51,8 @@ import org.esncz.esnchallenge.model.LocationPoint;
  */
 public class MapFragment extends Fragment implements OnMapReadyCallback {
 
+    private static String KEY_MAP_LOCATION = "MAP_LOCATION";
+
     private BackendFacade facade;
 
     public static int locationsCount;
@@ -70,12 +73,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     private Map<String, LocationPoint> locations;
 
+    private CameraPosition cameraPosition;
+
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-        locations = new HashMap<>();
+//        locations = new HashMap<>();
+
 
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
@@ -84,9 +91,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             mapFragment = SupportMapFragment.newInstance();
             transaction.replace(R.id.map, mapFragment).commit();
         }
-        mapFragment.getMapAsync(this);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        mapFragment.getMapAsync(this);
 
         return view;
     }
@@ -106,10 +112,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+//        mapFragment.setRetainInstance(true);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
+        if(savedInstanceState != null) {
+            cameraPosition = savedInstanceState.getParcelable(KEY_MAP_LOCATION);
+            if(mMap != null) {
+                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            }
+        }
 
         this.facade = new BackendFacade(getActivity().getApplicationContext(), "MAP");
         buttonCheck = this.getActivity().findViewById(R.id.button_check);
-        progressBar = this.getActivity().findViewById(R.id.progress_bar);
+        progressBar = this.getActivity().findViewById(R.id.progress_bar_map);
+        progressBar.setVisibility(View.GONE);
+
+
+
+        callLocationsEndpoint();// load locations
     }
 
     @Override
@@ -119,10 +140,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle stateToSave) {
+        super.onSaveInstanceState(stateToSave);
+        if(mMap != null) {
+            stateToSave.putParcelable(KEY_MAP_LOCATION, mMap.getCameraPosition());
+        }
+    }
+
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        callLocationsEndpoint();
+        updateMapLocations();
 
         buttonCheck.setVisibility(View.VISIBLE);
         buttonCheck.setOnClickListener(new View.OnClickListener() {
@@ -136,9 +165,75 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         updateLocationUI();
 
         LatLng defaultCameraLocation = new LatLng(49.7406922,15.3661319);
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(defaultCameraLocation, DEFAULT_ZOOM));
+        if(cameraPosition != null) {
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        } else {
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(defaultCameraLocation, DEFAULT_ZOOM));
+        }
+    }
+
+
+    private void updateLocationsCheckedState() {
+        if(ProfileFragment.isLoggedIn() && ProfileFragment.profileData != null) {
+            List<LocationPoint> checkedLocations = ProfileFragment.profileData.getCheckedLocations();
+            if(checkedLocations != null) {
+                for(LocationPoint location : checkedLocations) {
+                    locations.get(location.getTitle()).check();
+                }
+            }
+
+        }
+    }
+
+    private void addLocationToMap(LocationPoint location) {
+        if(locations.containsKey(location.getTitle()) && !locations.get(location.getTitle()).isShownOnMap()) {
+            locations.get(location.getTitle()).setMarker(mMap.addMarker(location.buildMarkerOptions()));
+            locations.get(location.getTitle()).setCircle(mMap.addCircle(location.buildCircleOptions(getResources())));
+        }
+    }
+
+    private void updateMapLocations() {
+        if(locations != null &&  !locations.isEmpty() && mMap != null) {
+            updateLocationsCheckedState();
+
+            for(LocationPoint location : locations.values()) {
+                addLocationToMap(location);
+            }
+        }
+    }
+
+    private void callLocationsEndpoint() {
+        this.facade.sendGetLocations(
+                new VolleyCallback<LocationPoint[]>() {
+                    @Override
+                    public void onSuccess(LocationPoint[] result) throws JSONException {
+                        if(locations == null) {
+                            locations = new HashMap<>();
+                        }
+
+                        for(LocationPoint location : result) {
+                            if(!locations.containsKey(location.getTitle())) {
+                                locations.put(location.getTitle(),location);
+                            }
+                        }
+                        locationsCount = locations.size();
+                        updateMapLocations();
+//                        addAllLocations();
+
+//                        Toast.makeText(getContext(),"Locations loaded.",Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(String result) throws Exception {
+                        Toast.makeText(getContext(),"Failed to load locations.",Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+
+    }
 
     private void showLocationCheckDialog(String message) {
+        showProgressBar(false);
         SimpleMessageDialog dialog = (SimpleMessageDialog) getFragmentManager().findFragmentByTag(RESPONSE_DIALOG_TAG);
         if(dialog == null) {
             dialog = new SimpleMessageDialog();
@@ -177,6 +272,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             //TODO: locations.get(list.get(0).getTitle()).getCircle().setFillColor(0x7FA0A500);// Only if is inside range
                             checked = true;
                             callLocationCheckEndpoint(location);
+//                            showLocationCheckDialog();
                         } else {
                             break;
                         }
@@ -273,55 +369,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             showProgressBar(false);
             Log.e("Exception: %s", e.getMessage());
         }
-    }
-
-
-    private void addAllLocations() {
-        for(LocationPoint location : locations.values()) {
-            addLocation(location);
-        }
-
-        if(ProfileFragment.isLoggedIn() && ProfileFragment.profileData != null) {
-            List<LocationPoint> checkedLocations = ProfileFragment.profileData.getCheckedLocations();
-            if(checkedLocations != null) {
-                for(LocationPoint location : checkedLocations) {
-                    locations.get(location.getTitle()).check();
-                }
-            }
-
-        }
-    }
-
-    private void addLocation(LocationPoint location) {
-        if(locations.containsKey(location.getTitle())) {
-            locations.get(location.getTitle()).setMarker(mMap.addMarker(location.buildMarkerOptions()));
-            locations.get(location.getTitle()).setCircle(mMap.addCircle(location.buildCircleOptions(getResources())));
-        }
-    }
-
-    private void callLocationsEndpoint() {
-        this.facade.sendGetLocations(
-                new VolleyCallback<LocationPoint[]>() {
-                    @Override
-                    public void onSuccess(LocationPoint[] result) throws JSONException {
-                        locations.clear();
-
-                        for(LocationPoint location : result) {
-                            locations.put(location.getTitle(),location);
-                        }
-                        locationsCount = locations.size();
-                        addAllLocations();
-
-                        Toast.makeText(getContext(),"Locations loaded.",Toast.LENGTH_LONG).show();
-                    }
-
-                    @Override
-                    public void onError(String result) throws Exception {
-                        Toast.makeText(getContext(),"Failed to load locations.",Toast.LENGTH_LONG).show();
-                    }
-                }
-        );
-
     }
 
     private void callLocationCheckEndpoint(final LocationPoint location) {

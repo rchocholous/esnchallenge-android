@@ -10,7 +10,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -22,6 +25,84 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private final Fragment scoresFragment = new HighScoresFragment();
     private final Fragment mapFragment = new MapFragment();
     private final Fragment profileFragment = new ProfileFragment();
+
+    private Fragment activeFragment;
+    private ViewPager viewpager;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
+        setContentView(R.layout.activity_main);
+
+        viewpager = findViewById(R.id.viewpager);
+        setupViewPager();
+
+        BottomNavigationView navigation = findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(this);
+        MenuItem menuItemToSelect = navigation.getMenu().getItem(1);
+        menuItemToSelect.setChecked(true);
+        onNavigationItemSelected(menuItemToSelect);
+
+//        activeFragment = mapFragment;
+//        if (savedInstanceState != null) {
+//            //Restore the fragment's instance
+//            activeFragment = getSupportFragmentManager().getFragment(savedInstanceState, "savedMapFragment");
+//        }
+//        loadFragment(activeFragment);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+//        getSupportFragmentManager().putFragment(outState,"savedMapFragment", activeFragment);
+    }
+
+    private void setupViewPager() {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(scoresFragment);
+        adapter.addFragment(mapFragment);
+        adapter.addFragment(profileFragment);
+
+        viewpager.setAdapter(adapter);
+    }
+
+
+
+//    private boolean loadFragment(Fragment fragment) {
+//        if (fragment != null) {
+//            getSupportFragmentManager()
+//                    .beginTransaction()
+//                    .replace(R.id.fragment_container, fragment)
+//                    .commit();
+//            return true;
+//        }
+//        return false;
+//    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+        switch (menuItem.getItemId()) {
+            case R.id.navigation_scores:
+//                activeFragment = scoresFragment;
+                viewpager.setCurrentItem(0);
+                break;
+            case R.id.navigation_map:
+//                activeFragment = mapFragment;
+                viewpager.setCurrentItem(1);
+                break;
+
+            case R.id.navigation_profile:
+//                activeFragment = profileFragment;
+                viewpager.setCurrentItem(2);
+                break;
+        }
+        return true;
+//        return loadFragment(activeFragment);
+    }
+
+
 
     public static void hideKeyboard(Activity activity) {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -41,19 +122,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         view.clearFocus();
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        getSupportActionBar().hide();
-        setContentView(R.layout.activity_main);
-
-        BottomNavigationView navigation = findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(this);
-
-        loadFragment(mapFragment);
-    }
-
-
     public void rateApplication(View view) {
         try {
             startActivity(new Intent(Intent.ACTION_VIEW,
@@ -62,37 +130,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             startActivity(new Intent(Intent.ACTION_VIEW,
                     Uri.parse("http://play.google.com/store/apps/details?id=" + this.getPackageName())));
         }
-    }
-
-
-    private boolean loadFragment(Fragment fragment) {
-        if (fragment != null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .commit();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        Fragment fragment = null;
-
-        switch (menuItem.getItemId()) {
-            case R.id.navigation_scores:
-                fragment = scoresFragment;
-                break;
-            case R.id.navigation_map:
-                fragment = mapFragment;
-                break;
-
-            case R.id.navigation_profile:
-                fragment = profileFragment;
-                break;
-        }
-        return loadFragment(fragment);
     }
 
     public boolean isConnected() {

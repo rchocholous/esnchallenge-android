@@ -2,6 +2,8 @@ package org.esncz.esnchallenge.model;
 
 import android.content.res.Resources;
 import android.location.Location;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.content.res.ResourcesCompat;
 
 import com.google.android.gms.maps.model.Circle;
@@ -18,7 +20,7 @@ import org.esncz.esnchallenge.R;
  * @author chochy
  * Date: 2019-01-02
  */
-public class LocationPoint implements Serializable {
+public class LocationPoint implements Serializable, Parcelable {
     private Long id;
     private String title;
     private String type;
@@ -49,6 +51,71 @@ public class LocationPoint implements Serializable {
         this.lng = lng;
     }
 
+
+    protected LocationPoint(Parcel in) {
+        if (in.readByte() == 0) {
+            id = null;
+        } else {
+            id = in.readLong();
+        }
+        title = in.readString();
+        type = in.readString();
+        if (in.readByte() == 0) {
+            lat = null;
+        } else {
+            lat = in.readDouble();
+        }
+        if (in.readByte() == 0) {
+            lng = null;
+        } else {
+            lng = in.readDouble();
+        }
+        radius = in.readInt();
+        checked = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (id == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeLong(id);
+        }
+        dest.writeString(title);
+        dest.writeString(type);
+        if (lat == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(lat);
+        }
+        if (lng == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeDouble(lng);
+        }
+        dest.writeInt(radius);
+        dest.writeByte((byte) (checked ? 1 : 0));
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<LocationPoint> CREATOR = new Creator<LocationPoint>() {
+        @Override
+        public LocationPoint createFromParcel(Parcel in) {
+            return new LocationPoint(in);
+        }
+
+        @Override
+        public LocationPoint[] newArray(int size) {
+            return new LocationPoint[size];
+        }
+    };
 
     public MarkerOptions buildMarkerOptions() {
         return new MarkerOptions().position(new LatLng(lat,lng)).title(title).snippet(type);
@@ -175,5 +242,9 @@ public class LocationPoint implements Serializable {
                 ", radius=" + radius +
                 ", checked=" + checked +
                 '}';
+    }
+
+    public boolean isShownOnMap() {
+        return getCircle() != null && getMarker() != null;
     }
 }
