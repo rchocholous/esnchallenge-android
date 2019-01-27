@@ -55,7 +55,6 @@ public class HighScoresFragment extends Fragment {
         layoutHighScores = this.getActivity().findViewById(R.id.layout_highscores);
 
         if(savedInstanceState != null && savedInstanceState.containsKey(KEY_SCORE_LIST)) {
-//            Toast.makeText(getContext(), "Leader board loaded from memory. ", Toast.LENGTH_LONG).show();
             highscores = savedInstanceState.getParcelableArrayList(KEY_SCORE_LIST);
 
             final ListView scoreListView = (ListView) this.getActivity().findViewById(R.id.listview_scores);
@@ -64,7 +63,6 @@ public class HighScoresFragment extends Fragment {
             callHighScoresEndpoint(true);
             scoreAdapter.notifyDataSetChanged();
         } else {
-//            Toast.makeText(getContext(), "Leader board loading... ", Toast.LENGTH_LONG).show();
             callHighScoresEndpoint(false);
         }
 
@@ -74,7 +72,6 @@ public class HighScoresFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         if(highscores != null) {
             outState.putParcelableArrayList(KEY_SCORE_LIST, (ArrayList<HighScore>) highscores);
-//        Toast.makeText(getContext(), "Leader board saved to memory. ", Toast.LENGTH_LONG).show();
         }
         super.onSaveInstanceState(outState);
     }
@@ -107,16 +104,10 @@ public class HighScoresFragment extends Fragment {
                             scoreListView.setAdapter(scoreAdapter);
                         } else {
                             scoreAdapter.notifyDataSetChanged();
-//                            Toast.makeText(getContext(), "Silently reloaded.", Toast.LENGTH_LONG).show();
                         }
 
                         layoutHighScores.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
-//                        if(!silentUpdate) {
-//                            Toast.makeText(getContext(), "Leader board loaded. ", Toast.LENGTH_LONG).show();
-//                        } else {
-//                            Toast.makeText(getContext(), "Silent - Leader board loaded. ", Toast.LENGTH_LONG).show();
-//                        }
                     }
 
                     @Override

@@ -81,9 +81,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
-//        locations = new HashMap<>();
-
-
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment == null) {
             FragmentManager manager = getFragmentManager();
@@ -112,7 +109,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-//        mapFragment.setRetainInstance(true);
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
@@ -127,8 +123,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         buttonCheck = this.getActivity().findViewById(R.id.button_check);
         progressBar = this.getActivity().findViewById(R.id.progress_bar_map);
         progressBar.setVisibility(View.GONE);
-
-
 
         callLocationsEndpoint();// load locations
     }
@@ -224,9 +218,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         }
                         locationsCount = locations.size();
                         updateMapLocations();
-//                        addAllLocations();
-
-//                        Toast.makeText(getContext(),"Locations loaded.",Toast.LENGTH_LONG).show();
                     }
 
                     @Override
@@ -344,7 +335,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             } else {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
-//                mLastKnownLocation = null;
                 getLocationPermission();
             }
         } catch (SecurityException e)  {

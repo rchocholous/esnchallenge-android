@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private final Fragment mapFragment = new MapFragment();
     private final Fragment profileFragment = new ProfileFragment();
 
-    private Fragment activeFragment;
+//    private Fragment activeFragment;
     private ViewPager viewpager;
 
     @Override
@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //            //Restore the fragment's instance
 //            activeFragment = getSupportFragmentManager().getFragment(savedInstanceState, "savedMapFragment");
 //        }
-//        loadFragment(activeFragment);
     }
 
     @Override
@@ -70,41 +69,24 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         viewpager.setAdapter(adapter);
     }
 
-
-
-//    private boolean loadFragment(Fragment fragment) {
-//        if (fragment != null) {
-//            getSupportFragmentManager()
-//                    .beginTransaction()
-//                    .replace(R.id.fragment_container, fragment)
-//                    .commit();
-//            return true;
-//        }
-//        return false;
-//    }
-
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
         hideKeyboard(this);
 
         switch (menuItem.getItemId()) {
             case R.id.navigation_scores:
-//                activeFragment = scoresFragment;
                 viewpager.setCurrentItem(0);
                 break;
             case R.id.navigation_map:
-//                activeFragment = mapFragment;
                 ((MapFragment)mapFragment).updateLocationsCheckedState();
                 viewpager.setCurrentItem(1);
                 break;
 
             case R.id.navigation_profile:
-//                activeFragment = profileFragment;
                 viewpager.setCurrentItem(2);
                 break;
         }
         return true;
-//        return loadFragment(activeFragment);
     }
 
 
