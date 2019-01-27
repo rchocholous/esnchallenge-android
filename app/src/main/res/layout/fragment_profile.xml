@@ -26,7 +26,7 @@
             android:id="@+id/button_settings_close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:background="?android:attr/colorBackground"
             android:padding="8dp"
             app:srcCompat="@drawable/ic_close" />
@@ -46,7 +46,7 @@
                     android:id="@+id/textView3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Settings"
+                    android:text="@string/settings"
                     android:textSize="30sp" />
 
                 <TextView
@@ -54,93 +54,93 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Quick links"
+                    android:text="@string/quick_links"
                     android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/textView9"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:drawableLeft="@drawable/ic_orange_web"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:drawableStart="@drawable/ic_orange_web"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
-                    android:text="Check out official site" />
+                    android:text="@string/checkout_website" />
 
                 <TextView
                     android:id="@+id/textView10"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:drawableLeft="@drawable/ic_orange_facebook"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:drawableStart="@drawable/ic_orange_facebook"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
-                    android:text="Like us on Facebook" />
+                    android:text="@string/like_on_facebook" />
 
                 <TextView
                     android:id="@+id/textView12"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:drawableLeft="@drawable/ic_orange_instagram"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:drawableStart="@drawable/ic_orange_instagram"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
-                    android:text="Follow us on Instagram" />
+                    android:text="@string/follow_instagram" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="About Geotification"
+                    android:text="@string/about_app"
                     android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/textView15"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:drawableLeft="@drawable/ic_orange_star"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:drawableStart="@drawable/ic_orange_star"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
                     android:onClick="rateApplication"
-                    android:text="Rate the app" />
+                    android:text="@string/rate_app" />
 
                 <TextView
                     android:id="@+id/textView18"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:drawableLeft="@drawable/ic_orange_recommend"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:drawableStart="@drawable/ic_orange_recommend"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
-                    android:text="Share with friends" />
+                    android:text="@string/share" />
 
                 <TextView
                     android:id="@+id/textView19"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:drawableLeft="@drawable/ic_orange_message"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:drawableStart="@drawable/ic_orange_message"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
-                    android:text="Contact us" />
+                    android:text="@string/contact_us" />
 
                 <TextView
                     android:id="@+id/textView20"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="4dp"
-                    android:drawableLeft="@drawable/ic_orange_sync"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:drawableStart="@drawable/ic_orange_sync"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
-                    android:text="Terms of service" />
+                    android:text="@string/terms_of_service" />
             </LinearLayout>
         </ScrollView>
 
@@ -150,13 +150,13 @@
         android:id="@+id/layout_login"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageButton
             android:id="@+id/button_settings_open2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:background="?android:attr/colorBackground"
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -264,126 +264,150 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageButton
             android:id="@+id/button_settings_open"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:background="?android:attr/colorBackground"
             android:padding="8dp"
             app:srcCompat="@drawable/ic_settings" />
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                android:isScrollContainer="false"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/text_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Howdy Rudolf!"
+                    android:text="Howdy user!"
                     android:textSize="30sp" />
 
                 <TextView
                     android:id="@+id/text_checked_count"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:text="Check location: 0/10" />
 
                 <TextView
                     android:id="@+id/textView6"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="About me"
+                    android:layout_margin="8dp"
+                    android:text="@string/about_me"
+                    android:textColor="@android:color/black"
                     android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/textView8"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Email"
+                    android:text="@string/email"
                     android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/text_email"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="email" />
 
                 <TextView
                     android:id="@+id/textView7"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="First name"
+                    android:text="@string/first_name"
                     android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/text_firstname"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="firstname" />
 
                 <TextView
                     android:id="@+id/textView11"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Last name"
+                    android:text="@string/last_name"
                     android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/text_lastname"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="lastname" />
 
                 <TextView
                     android:id="@+id/textView13"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Gender"
+                    android:text="@string/gender"
                     android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/text_gender"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="g" />
 
                 <TextView
                     android:id="@+id/textView16"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="University"
+                    android:text="@string/university"
                     android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/text_university"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="university" />
 
                 <TextView
                     android:id="@+id/textView17"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="ESN section"
+                    android:text="@string/esn_section"
                     android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/text_section"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="esn name" />
 
                 <TextView
                     android:id="@+id/textView_visited_header"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
-                    android:text="Checked locations"
+                    android:text="@string/checked_locations"
                     android:textColor="@android:color/black"
                     android:textSize="18sp" />
 
@@ -391,16 +415,16 @@
                     android:id="@+id/listview_visited_locations"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:isScrollContainer="false" />
+                    android:isScrollContainer="false"/>
 
-                <Button
-                    android:id="@+id/button_logout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Logout" />
             </LinearLayout>
         </ScrollView>
 
+        <Button
+            android:id="@+id/button_logout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/logout" />
 
     </LinearLayout>
 

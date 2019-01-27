@@ -231,6 +231,18 @@ public class LocationPoint implements Serializable, Parcelable {
         }
     }
 
+    public boolean uncheck() {
+        if (this.checked) {
+            this.checked = false;
+            if (circle != null) {
+                circle.setFillColor(ResourcesCompat.getColor(this.resources, R.color.orangeLightTransparentColor, null));
+            }
+            return true;
+        } else {
+            return false;// Already checked response!
+        }
+    }
+
     @Override
     public String toString() {
         return "LocationPoint{" +

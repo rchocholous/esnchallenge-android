@@ -185,28 +185,35 @@ public class ProfileFragment extends Fragment {
     }
 
     private void callAccessTokenEndpoint() {
-        this.facade.sendGetAccessToken(fieldEmail.getText().toString(), fieldPassword.getText().toString(),
-                new VolleyCallback<JSONObject>() {
-                    @Override
-                    public void onSuccess(JSONObject result) throws JSONException {
-                        if(!result.isNull("access_token")) {
-                            ((MainActivity)getActivity()).setAccessToken(result.getString("access_token"));
-                        } else {
-                            try {
-                                this.onError("Error: access_token is null!");
-                            } catch (Exception ignored) { }
+        final String email = fieldEmail.getText().toString();
+        final String password = fieldPassword.getText().toString();
+        if(!email.isEmpty() && !password.isEmpty()) {
+            this.facade.sendGetAccessToken(email, password,
+                    new VolleyCallback<JSONObject>() {
+                        @Override
+                        public void onSuccess(JSONObject result) throws JSONException {
+                            if(!result.isNull("access_token")) {
+                                ((MainActivity)getActivity()).setAccessToken(result.getString("access_token"));
+                            } else {
+                                try {
+                                    this.onError("Error: access_token is null!");
+                                } catch (Exception ignored) { }
+                            }
+
+                            callProfileEndpoint();
                         }
 
-                        callProfileEndpoint();
+                        @Override
+                        public void onError(String result) throws Exception {
+                            showLayout(LayoutEnum.LOGIN);
+                            Toast.makeText(getContext(), "Error during login." + result, Toast.LENGTH_LONG).show();
+                        }
                     }
-
-                    @Override
-                    public void onError(String result) throws Exception {
-                        showLayout(LayoutEnum.LOGIN);
-                        Toast.makeText(getContext(), "Error during login." + result, Toast.LENGTH_LONG).show();
-                    }
-                }
-        );
+            );
+        } else {
+            showLayout(LayoutEnum.LOGIN);
+            Toast.makeText(getContext(), "You need to fill the email and password.", Toast.LENGTH_LONG).show();
+        }
 
     }
 
@@ -246,6 +253,7 @@ public class ProfileFragment extends Fragment {
             if(profile.getCheckedLocations() != null) {
                 textLocationCount.setText(String.format("Check location: %d/%d", profile.getCheckedLocations().size(), MapFragment.locationsCount));
                 locationsListView.setAdapter(new VisitedLocationsAdapter(getContext(), (ArrayList<LocationPoint>) profile.getCheckedLocations()));
+                MainActivity.setListViewHeightBasedOnChildren(locationsListView);
             }
 
         }
@@ -256,6 +264,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void showLayout(LayoutEnum layout) {
+        MainActivity.hideKeyboard(getActivity());
         if(layout == null) {
             layout = LayoutEnum.NONE;
         }

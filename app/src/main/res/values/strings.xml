@@ -9,4 +9,24 @@
     <string name="login">Login</string>
     <string name="forgot_password"><a href="https://challenge.esncz.org/password/forgot">Forgot password?</a></string>
     <string name="erasmus_student_network">Erasmus Student Network</string>
+    <string name="leaderboards">Leaderboards</string>
+    <string name="settings">Settings</string>
+    <string name="quick_links">Quick links</string>
+    <string name="checkout_website">Check out official site</string>
+    <string name="like_on_facebook">Like us on Facebook</string>
+    <string name="follow_instagram">Follow us on Instagram</string>
+    <string name="about_app">About ESN challenge</string>
+    <string name="rate_app">Rate the app</string>
+    <string name="share">Share with friends</string>
+    <string name="contact_us">Contact us</string>
+    <string name="terms_of_service">Terms of service</string>
+    <string name="about_me">About me</string>
+    <string name="email">Email</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="gender">Gender</string>
+    <string name="university">University</string>
+    <string name="esn_section">ESN section</string>
+    <string name="checked_locations">Checked locations</string>
+    <string name="logout">Logout</string>
 </resources>
