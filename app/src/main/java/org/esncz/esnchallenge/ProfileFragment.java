@@ -83,6 +83,14 @@ public class ProfileFragment extends Fragment {
 
         link = (TextView) this.getActivity().findViewById(R.id.text_link_reset);
         link.setMovementMethod(LinkMovementMethod.getInstance());
+        link = (TextView) this.getActivity().findViewById(R.id.text_link_ig);
+        link.setMovementMethod(LinkMovementMethod.getInstance());
+        link = (TextView) this.getActivity().findViewById(R.id.text_link_www);
+        link.setMovementMethod(LinkMovementMethod.getInstance());
+        link = (TextView) this.getActivity().findViewById(R.id.text_link_terms);
+        link.setMovementMethod(LinkMovementMethod.getInstance());
+        link = (TextView) this.getActivity().findViewById(R.id.text_link_contact);
+        link.setMovementMethod(LinkMovementMethod.getInstance());
 
         progressBar = this.getActivity().findViewById(R.id.progress_bar_profile);
 

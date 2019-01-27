@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ImageButton
             android:id="@+id/button_settings_close"
@@ -58,7 +58,7 @@
                     android:textSize="20sp" />
 
                 <TextView
-                    android:id="@+id/textView9"
+                    android:id="@+id/text_link_www"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -66,10 +66,11 @@
                     android:drawableStart="@drawable/ic_orange_web"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
-                    android:text="@string/checkout_website" />
+                    android:text="@string/checkout_website"
+                    android:textColorLink="?android:attr/textColorTertiary" />
 
                 <TextView
-                    android:id="@+id/textView10"
+                    android:id="@+id/text_link_fb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -77,10 +78,11 @@
                     android:drawableStart="@drawable/ic_orange_facebook"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
-                    android:text="@string/like_on_facebook" />
+                    android:text="@string/like_on_facebook"
+                    android:visibility="gone" />
 
                 <TextView
-                    android:id="@+id/textView12"
+                    android:id="@+id/text_link_ig"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -88,7 +90,8 @@
                     android:drawableStart="@drawable/ic_orange_instagram"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
-                    android:text="@string/follow_instagram" />
+                    android:text="@string/follow_instagram"
+                    android:textColorLink="?android:attr/textColorTertiary" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -107,7 +110,8 @@
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
                     android:onClick="rateApplication"
-                    android:text="@string/rate_app" />
+                    android:text="@string/rate_app"
+                    android:textColorLink="?android:attr/textColorTertiary" />
 
                 <TextView
                     android:id="@+id/textView18"
@@ -118,10 +122,11 @@
                     android:drawableStart="@drawable/ic_orange_recommend"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
-                    android:text="@string/share" />
+                    android:text="@string/share"
+                    android:textColorLink="?android:attr/textColorTertiary" />
 
                 <TextView
-                    android:id="@+id/textView19"
+                    android:id="@+id/text_link_contact"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -129,10 +134,11 @@
                     android:drawableStart="@drawable/ic_orange_message"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
-                    android:text="@string/contact_us" />
+                    android:text="@string/contact_us"
+                    android:textColorLink="?android:attr/textColorTertiary" />
 
                 <TextView
-                    android:id="@+id/textView20"
+                    android:id="@+id/text_link_terms"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -140,7 +146,8 @@
                     android:drawableStart="@drawable/ic_orange_sync"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
-                    android:text="@string/terms_of_service" />
+                    android:text="@string/terms_of_service"
+                    android:textColorLink="?android:attr/textColorTertiary" />
             </LinearLayout>
         </ScrollView>
 
@@ -264,7 +271,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <ImageButton
             android:id="@+id/button_settings_open"
@@ -415,7 +422,7 @@
                     android:id="@+id/listview_visited_locations"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:isScrollContainer="false"/>
+                    android:isScrollContainer="false" />
 
             </LinearLayout>
         </ScrollView>
