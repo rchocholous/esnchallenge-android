@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 viewpager.setCurrentItem(0);
                 break;
             case R.id.navigation_map:
-                ((MapFragment)mapFragment).updateLocationsCheckedState();
+                ((MapFragment)mapFragment).notifyMapShown();
                 viewpager.setCurrentItem(1);
                 break;
 

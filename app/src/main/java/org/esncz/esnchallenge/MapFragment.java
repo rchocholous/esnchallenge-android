@@ -166,8 +166,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    public void notifyMapShown() {
+        updateLocationsCheckedState();
+        if(facade != null) {
+            callLocationsEndpoint();
+        }
+    }
 
-    public void updateLocationsCheckedState() {
+    private void updateLocationsCheckedState() {
         if(locations != null) {
             if(ProfileFragment.isLoggedIn() && ProfileFragment.profileData != null) {
                 List<LocationPoint> checkedLocations = ProfileFragment.profileData.getCheckedLocations();
