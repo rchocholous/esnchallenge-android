@@ -29,4 +29,7 @@
     <string name="esn_section">ESN section</string>
     <string name="checked_locations">Checked locations</string>
     <string name="logout">Logout</string>
+    <string name="password">Password</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="close_settings">Close Settings</string>
 </resources>

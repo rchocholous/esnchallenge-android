@@ -44,8 +44,7 @@ public class ProfileFragment extends Fragment implements ProfileChangedListener 
     private TextView textName, textEmail, textFirstName, textLastName,  textGender, textUniversity, textSection, textLocationCount;
     private ListView locationsListView;
 
-    private LinearLayout layoutProfile, layoutSettings;
-    private ConstraintLayout layoutLogin;
+    private LinearLayout layoutProfile, layoutSettings, layoutLogin;
     private ProgressBar progressBar;
 
 
