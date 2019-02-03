@@ -211,7 +211,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintWidth_percent="70"
+                        app:layout_constraintWidth_percent="0.7"
                         tools:srcCompat="@drawable/logo" />
 
                     <EditText

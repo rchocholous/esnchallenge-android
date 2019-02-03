@@ -223,7 +223,7 @@ public class ProfileFragment extends Fragment implements ProfileChangedListener 
                         @Override
                         public void onError(String result) throws Exception {
                             showLayout(LayoutEnum.LOGIN);
-                            Toast.makeText(getContext(), "Error during login." + result, Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Error during login: " + result, Toast.LENGTH_LONG).show();
                         }
                     }
             );

@@ -1,8 +1,13 @@
 package org.esncz.esnchallenge.network;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 
 import org.json.JSONException;
@@ -87,8 +92,20 @@ public class RequestBuilder<T> {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        String errorMessage;
+
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            errorMessage = "Could not connect to server.";
+                        } else if (error instanceof AuthFailureError) {
+                            errorMessage = "Invalid credentials.";
+                        } else if (error instanceof ServerError) {
+                            errorMessage = "Server error.";
+                        } else {
+                            errorMessage = "Network error.";
+                        }
+
                         try {
-                            callback.onError(error.getMessage());
+                            callback.onError(errorMessage);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
