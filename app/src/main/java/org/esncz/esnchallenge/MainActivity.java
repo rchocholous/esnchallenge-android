@@ -3,6 +3,7 @@ package org.esncz.esnchallenge;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -12,14 +13,22 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import org.esncz.esnchallenge.facade.BackendFacade;
+import org.esncz.esnchallenge.model.LocationPoint;
+import org.esncz.esnchallenge.model.ProfileData;
+import org.esncz.esnchallenge.network.VolleyCallback;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -32,9 +41,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //    private Fragment activeFragment;
     private ViewPager viewpager;
 
+    // Global data
+    private BackendFacade facade;
+    private ProfileData profile;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.facade = new BackendFacade(this.getApplicationContext(), "ACTIVITY");
+
         getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
 
@@ -52,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //            //Restore the fragment's instance
 //            activeFragment = getSupportFragmentManager().getFragment(savedInstanceState, "savedMapFragment");
 //        }
+        loadProfileData();
     }
 
     @Override
@@ -78,7 +95,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 viewpager.setCurrentItem(0);
                 break;
             case R.id.navigation_map:
-                ((MapFragment)mapFragment).notifyMapShown();
+//                ((ProfileFragment)profileFragment).notifyFragmentLoaded();
+//                ((MapFragment)mapFragment).notifyFragmentLoaded(this.profile);
                 viewpager.setCurrentItem(1);
                 break;
 
@@ -151,10 +169,90 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     }
 
     public String getAccessToken() {
-        return accessToken;
+        SharedPreferences preferences = getSharedPreferences("ESNChallengePreferences", MODE_PRIVATE);
+        return preferences.getString("ACCESS_TOKEN",null);
+        //return accessToken;
     }
 
     public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+        SharedPreferences preferences = getSharedPreferences("ESNChallengePreferences", MODE_PRIVATE);
+        preferences.edit().putString("ACCESS_TOKEN", accessToken).commit();
+        //this.accessToken = accessToken;
+    }
+
+    public ProfileData getProfile() {
+        return this.profile;
+    }
+
+    public void loadProfileData() {
+        SharedPreferences preferences = getSharedPreferences("ESNChallengePreferences", MODE_PRIVATE);
+        final String accessToken = preferences.getString("ACCESS_TOKEN",null);
+        if(accessToken != null) {
+            callProfileEndpoint(accessToken);
+        }
+    }
+
+    public void cleanProfileData() {
+        this.profile = null;
+    }
+
+    private void callProfileEndpoint(String accessToken) {
+        this.facade.sendGetProfile(accessToken,
+                new VolleyCallback<ProfileData>() {
+                    @Override
+                    public void onSuccess(ProfileData result) {
+                        MainActivity.this.profile = result;
+                        notifyProfileChanged();
+                        Toast.makeText(getApplicationContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
+                    }
+
+                    @Override
+                    public void onError(String result) throws Exception {
+                        Toast.makeText(getApplicationContext(), "Failed to load profile data.", Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+
+    }
+
+    private List<ProfileChangedListener> profileChangedListener;
+
+    public void registerProfileChangedListener(ProfileChangedListener listener) {
+        if(profileChangedListener == null) {
+            profileChangedListener = new LinkedList<>();
+        }
+        profileChangedListener.add(listener);
+        notifyProfileChanged();
+    }
+
+    public void unregisterProfileChangedListener(ProfileChangedListener listener) {
+        if(profileChangedListener == null) {
+            profileChangedListener = new LinkedList<>();
+        }
+        profileChangedListener.remove(listener);
+    }
+
+    public void notifyProfileChanged() {
+        if(profileChangedListener == null) {
+            profileChangedListener = new LinkedList<>();
+        }
+        for(ProfileChangedListener listener : profileChangedListener) {
+            listener.updateProfile(this.profile);
+        }
+    }
+
+    public void addCheckedLocation(LocationPoint location) {
+        if(this.profile != null) {
+            if(this.profile.getCheckedLocations() == null) {
+                this.profile.setCheckedLocations(new ArrayList<LocationPoint>());
+            }
+            this.profile.getCheckedLocations().add(location);
+        }
+        notifyProfileChanged();
+    }
+
+
+    public boolean isLoggedIn() {
+        return this.profile != null;
     }
 }

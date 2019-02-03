@@ -35,7 +35,7 @@ import org.esncz.esnchallenge.tools.VisitedLocationsAdapter;
  * @author chochy
  * Date: 2019-01-02
  */
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements ProfileChangedListener {
 
     private BackendFacade facade;
     public static ProfileData profileData;//TODO: static = ugly solution. Use "Bundle" instead
@@ -76,6 +76,8 @@ public class ProfileFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         this.facade = new BackendFacade(getActivity().getApplicationContext(), "PROFILE");
+        ((MainActivity)getActivity()).registerProfileChangedListener(this);
+
         drawLogo();//TODO: Why I need to do this??
 
         TextView link = (TextView) this.getActivity().findViewById(R.id.text_link_create);
@@ -137,8 +139,9 @@ public class ProfileFragment extends Fragment {
         buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ProfileFragment.profileData = null;
+//                ProfileFragment.profileData = null;
                 ((MainActivity)getActivity()).setAccessToken(null);
+                ((MainActivity)getActivity()).cleanProfileData();
                 showLayout(LayoutEnum.LOGIN);
             }
         });
@@ -163,7 +166,7 @@ public class ProfileFragment extends Fragment {
         buttonSettingsClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isLoggedIn()) {
+                if(((MainActivity)getActivity()).isLoggedIn()) {
                     showLayout(LayoutEnum.PROFILE);
                 } else {
                     showLayout(LayoutEnum.LOGIN);
@@ -171,16 +174,23 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        showLayout(LayoutEnum.LOGIN);
+        if(((MainActivity)getActivity()).isLoggedIn()) {
+            ProfileData profile = ((MainActivity)getActivity()).getProfile();
+            populateProfileData(profile);
+            showLayout(LayoutEnum.PROFILE);
+        } else {
+            showLayout(LayoutEnum.LOGIN);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        if(isLoggedIn()) {
+        if(((MainActivity)getActivity()).isLoggedIn()) {
+            ProfileData profile = ((MainActivity)getActivity()).getProfile();
+            populateProfileData(profile);
             showLayout(LayoutEnum.PROFILE);
-            populateProfileData(ProfileFragment.profileData);
         } else {
             showLayout(LayoutEnum.LOGIN);
         }
@@ -189,8 +199,14 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        ((MainActivity)getActivity()).unregisterProfileChangedListener(this);
         this.facade.cancelRequests();
     }
+
+//    public void notifyFragmentLoaded() {
+//        loadFacade();
+////        callProfileEndpoint();
+//    }
 
     private void callAccessTokenEndpoint() {
         final String email = fieldEmail.getText().toString();
@@ -208,7 +224,8 @@ public class ProfileFragment extends Fragment {
                                 } catch (Exception ignored) { }
                             }
 
-                            callProfileEndpoint();
+//                            callProfileEndpoint();
+                            ((MainActivity)getActivity()).loadProfileData();
                         }
 
                         @Override
@@ -225,26 +242,32 @@ public class ProfileFragment extends Fragment {
 
     }
 
-    private void callProfileEndpoint() {
-        this.facade.sendGetProfile(((MainActivity) getActivity()).getAccessToken(),
-                new VolleyCallback<ProfileData>() {
-                    @Override
-                    public void onSuccess(ProfileData result) {
-                        ProfileFragment.profileData = result;
-                        ProfileFragment.this.populateProfileData(ProfileFragment.profileData);
-                        showLayout(LayoutEnum.PROFILE);
-                        Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
-                    }
+//    private void callProfileEndpoint() {
+//        this.facade.sendGetProfile(((MainActivity) getActivity()).getAccessToken(),
+//                new VolleyCallback<ProfileData>() {
+//                    @Override
+//                    public void onSuccess(ProfileData result) {
+//                        ProfileFragment.profileData = result;
+//                        ProfileFragment.this.populateProfileData(ProfileFragment.profileData);
+//                        showLayout(LayoutEnum.PROFILE);
+//                        Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
+//                    }
+//
+//                    @Override
+//                    public void onError(String result) throws Exception {
+//                        showLayout(LayoutEnum.LOGIN);
+//                        Toast.makeText(getContext(), "Failed to load profile data.", Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//        );
+//
+//    }
 
-                    @Override
-                    public void onError(String result) throws Exception {
-                        showLayout(LayoutEnum.LOGIN);
-                        Toast.makeText(getContext(), "Failed to load profile data.", Toast.LENGTH_LONG).show();
-                    }
-                }
-        );
-
-    }
+//    public void actionAutoLogin() {
+//        /*
+//        if( token != null) loadProfile()
+//         */
+//    }
 
 
     private void populateProfileData(ProfileData profile) {
@@ -267,15 +290,15 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    public static boolean isLoggedIn() {
-        return ProfileFragment.profileData != null;
-    }
-
     private void showLayout(LayoutEnum layout) {
         MainActivity.hideKeyboard(getActivity());
         if(layout == null) {
             layout = LayoutEnum.NONE;
         }
+        if(progressBar == null) {//bad solution
+            return;
+        }
+
         progressBar.setVisibility(View.GONE);
         switch (layout) {
             case PROFILE:
@@ -298,6 +321,14 @@ public class ProfileFragment extends Fragment {
                 layoutProfile.setVisibility(View.GONE);
                 layoutSettings.setVisibility(View.GONE);
                 break;
+        }
+    }
+
+    @Override
+    public void updateProfile(ProfileData data) {
+        if(data != null) {
+            populateProfileData(data);
+            showLayout(LayoutEnum.PROFILE);
         }
     }
 

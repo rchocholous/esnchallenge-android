@@ -32,6 +32,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import org.esncz.esnchallenge.facade.BackendFacade;
+import org.esncz.esnchallenge.model.ProfileData;
 import org.esncz.esnchallenge.network.VolleyCallback;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,7 +50,7 @@ import org.esncz.esnchallenge.model.LocationPoint;
  * @author chochy
  * Date: 2019-01-02
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback, ProfileChangedListener {
 
     private static String KEY_MAP_LOCATION = "MAP_LOCATION";
 
@@ -110,6 +111,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        this.facade = new BackendFacade(getActivity().getApplicationContext(), "MAP");
+        ((MainActivity)getActivity()).registerProfileChangedListener(this);
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         if(savedInstanceState != null) {
@@ -119,7 +123,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             }
         }
 
-        this.facade = new BackendFacade(getActivity().getApplicationContext(), "MAP");
         buttonCheck = this.getActivity().findViewById(R.id.button_check);
         progressBar = this.getActivity().findViewById(R.id.progress_bar_map);
         progressBar.setVisibility(View.GONE);
@@ -130,6 +133,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        ((MainActivity)getActivity()).unregisterProfileChangedListener(this);
         this.facade.cancelRequests();
     }
 
@@ -145,7 +149,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        updateMapLocations();
+        ((MainActivity)getActivity()).notifyProfileChanged();
 
         buttonCheck.setVisibility(View.VISIBLE);
         buttonCheck.setOnClickListener(new View.OnClickListener() {
@@ -166,23 +170,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    public void notifyMapShown() {
-        updateLocationsCheckedState();
+    public void notifyFragmentLoaded(ProfileData profile) {
+        if(profile != null) {
+            updateLocationsCheckedState(profile.getCheckedLocations());
+        }
         if(facade != null) {
             callLocationsEndpoint();
         }
     }
 
-    private void updateLocationsCheckedState() {
+    private void updateLocationsCheckedState(List<LocationPoint> checkedLocations) {
         if(locations != null) {
-            if(ProfileFragment.isLoggedIn() && ProfileFragment.profileData != null) {
-                List<LocationPoint> checkedLocations = ProfileFragment.profileData.getCheckedLocations();
-                if(checkedLocations != null) {
-                    for(LocationPoint location : checkedLocations) {
-                        locations.get(location.getTitle()).check();
-                    }
+            if(checkedLocations != null) {
+                for(LocationPoint location : checkedLocations) {
+                    locations.get(location.getTitle()).check();
                 }
-
             } else {
                 for(LocationPoint location : locations.values()) {
                     location.uncheck();
@@ -198,14 +200,28 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void updateMapLocations() {
-        if(locations != null &&  !locations.isEmpty() && mMap != null) {
-            updateLocationsCheckedState();
+//    private void updateMapLocations() {
+//        if(locations != null &&  !locations.isEmpty() && mMap != null) {
+//            updateLocationsCheckedState();
+//
+//            for(LocationPoint location : locations.values()) {
+//                addLocationToMap(location);
+//            }
+//        }
+//    }
 
+    @Override
+    public void updateProfile(ProfileData data) {
+        if(data != null) {
+            updateLocationsCheckedState(data.getCheckedLocations());
+        }
+
+        if(locations != null &&  !locations.isEmpty() && mMap != null) {
             for(LocationPoint location : locations.values()) {
                 addLocationToMap(location);
             }
         }
+
     }
 
     private void callLocationsEndpoint() {
@@ -223,7 +239,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                             }
                         }
                         locationsCount = locations.size();
-                        updateMapLocations();
+//                        updateMapLocations();
+                        ((MainActivity)getActivity()).notifyProfileChanged();
                     }
 
                     @Override
@@ -380,7 +397,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         @Override
                         public void onSuccess(JSONObject result) throws JSONException {
                             if(location.check()) {
-                                ProfileFragment.profileData.getCheckedLocations().add(location);
+                                ((MainActivity)getActivity()).addCheckedLocation(location);
+                                //TODO: MainActivity add method: addCheckedLocation
+//                                ((MainActivity)getActivity()).getProfile().getCheckedLocations().add()
+//                                ProfileFragment.profileData.getCheckedLocations().add(location);
                             }
                             showProgressBar(false);
                             showLocationCheckDialog(result.getString("message"));
@@ -398,5 +418,4 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             showLocationCheckDialog("You must log in to check the location and participate in challenge.");
         }
     }
-
 }
