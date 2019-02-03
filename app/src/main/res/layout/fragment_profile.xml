@@ -46,6 +46,7 @@
                     android:id="@+id/textView3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/settings"
                     android:textSize="30sp" />
 
@@ -54,6 +55,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/quick_links"
                     android:textSize="20sp" />
 
@@ -65,6 +67,7 @@
                     android:layout_marginBottom="8dp"
                     android:drawableStart="@drawable/ic_orange_web"
                     android:drawablePadding="4dp"
+                    android:fontFamily="@font/montserrat"
                     android:gravity="center_vertical"
                     android:text="@string/checkout_website"
                     android:textColorLink="?android:attr/textColorTertiary" />
@@ -78,6 +81,7 @@
                     android:drawableStart="@drawable/ic_orange_facebook"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/like_on_facebook"
                     android:visibility="gone" />
 
@@ -90,6 +94,7 @@
                     android:drawableStart="@drawable/ic_orange_instagram"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/follow_instagram"
                     android:textColorLink="?android:attr/textColorTertiary" />
 
@@ -97,6 +102,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/about_app"
                     android:textSize="20sp" />
 
@@ -110,6 +116,7 @@
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
                     android:onClick="rateApplication"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/rate_app"
                     android:textColorLink="?android:attr/textColorTertiary" />
 
@@ -122,6 +129,7 @@
                     android:drawableStart="@drawable/ic_orange_recommend"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/share"
                     android:textColorLink="?android:attr/textColorTertiary" />
 
@@ -134,6 +142,7 @@
                     android:drawableStart="@drawable/ic_orange_message"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/contact_us"
                     android:textColorLink="?android:attr/textColorTertiary" />
 
@@ -146,6 +155,7 @@
                     android:drawableStart="@drawable/ic_orange_sync"
                     android:drawablePadding="4dp"
                     android:gravity="center_vertical"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/terms_of_service"
                     android:textColorLink="?android:attr/textColorTertiary" />
             </LinearLayout>
@@ -194,6 +204,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:ems="10"
+            android:fontFamily="@font/montserrat"
             android:hint="Email"
             android:inputType="textEmailAddress"
             app:layout_constraintBottom_toTopOf="@+id/edit_text_password"
@@ -209,6 +220,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             android:ems="10"
+            android:fontFamily="@font/montserrat"
             android:hint="Password"
             android:inputType="textPassword"
             android:nextFocusDown="@id/button_login"
@@ -223,6 +235,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="24dp"
+            android:fontFamily="@font/montserrat"
             android:text="@string/forgot_password"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
             app:layout_constraintBottom_toTopOf="@+id/button_login"
@@ -237,6 +250,7 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="12dp"
             android:nextFocusUp="@id/edit_text_password"
+            android:fontFamily="@font/montserrat"
             android:text="@string/login"
             android:textColor="@color/whiteButtonText"
             app:layout_constraintBottom_toTopOf="@+id/textView"
@@ -251,6 +265,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
             android:autoLink="web"
+            android:fontFamily="@font/montserrat"
             android:text="@string/no_account"
             app:layout_constraintBottom_toTopOf="@+id/text_link_create"
             app:layout_constraintEnd_toEndOf="parent"
@@ -261,6 +276,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
+            android:fontFamily="@font/montserrat"
             android:text="@string/create_account"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -302,6 +318,7 @@
                     android:id="@+id/text_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
                     android:text="Howdy user!"
                     android:textSize="30sp" />
 
@@ -310,6 +327,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
+                    android:fontFamily="@font/montserrat"
                     android:text="Check location: 0/10" />
 
                 <TextView
@@ -317,6 +335,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/about_me"
                     android:textColor="@android:color/black"
                     android:textSize="18sp" />
@@ -325,6 +344,7 @@
                     android:id="@+id/textView8"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/email"
                     android:textSize="18sp" />
 
@@ -334,12 +354,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/montserrat"
                     android:text="email" />
 
                 <TextView
                     android:id="@+id/textView7"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/first_name"
                     android:textSize="18sp" />
 
@@ -349,12 +371,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/montserrat"
                     android:text="firstname" />
 
                 <TextView
                     android:id="@+id/textView11"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/last_name"
                     android:textSize="18sp" />
 
@@ -364,12 +388,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/montserrat"
                     android:text="lastname" />
 
                 <TextView
                     android:id="@+id/textView13"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/gender"
                     android:textSize="18sp" />
 
@@ -379,12 +405,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/montserrat"
                     android:text="g" />
 
                 <TextView
                     android:id="@+id/textView16"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/university"
                     android:textSize="18sp" />
 
@@ -394,12 +422,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/montserrat"
                     android:text="university" />
 
                 <TextView
                     android:id="@+id/textView17"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/esn_section"
                     android:textSize="18sp" />
 
@@ -409,6 +439,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginBottom="8dp"
+                    android:fontFamily="@font/montserrat"
                     android:text="esn name" />
 
                 <TextView
@@ -416,6 +447,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="8dp"
+                    android:fontFamily="@font/montserrat"
                     android:text="@string/checked_locations"
                     android:textColor="@android:color/black"
                     android:textSize="18sp" />
@@ -433,6 +465,7 @@
             android:id="@+id/button_logout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
             android:text="@string/logout" />
 
     </LinearLayout>

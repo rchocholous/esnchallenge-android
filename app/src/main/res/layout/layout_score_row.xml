@@ -15,6 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:fontFamily="@font/montserrat"
         android:text="RANK"
         android:textColor="@android:color/black"
         android:textSize="30sp"
@@ -32,6 +33,7 @@
             android:id="@+id/text_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
             android:text="username"
             android:textColor="@android:color/black"
             android:textSize="16sp"
@@ -42,6 +44,7 @@
             android:id="@+id/text_section"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
             android:text="section"
             tools:layout_editor_absoluteX="176dp"
             tools:layout_editor_absoluteY="94dp" />
@@ -58,6 +61,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:fontFamily="@font/montserrat"
         android:text="points"
         android:textColor="@color/orangeColor"
         app:layout_constraintEnd_toEndOf="parent" />

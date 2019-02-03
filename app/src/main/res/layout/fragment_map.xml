@@ -29,6 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
+            android:fontFamily="@font/montserrat"
             android:text="@string/button_title_check"
             android:textColor="@color/whiteButtonText"
             android:visibility="invisible"
