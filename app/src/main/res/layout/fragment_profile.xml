@@ -183,124 +183,124 @@
                 app:srcCompat="@drawable/ic_settings"
                 android:contentDescription="@string/open_settings" />
 
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="parent">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="parent">
 
-                <android.support.constraint.ConstraintLayout
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal">
+
+                <ImageView
+                    android:id="@+id/imageLogo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:contentDescription="@string/erasmus_student_network"
+                    android:paddingTop="32dp"
+                    android:paddingBottom="32dp"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toTopOf="@+id/edit_text_email"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_percent="0.7"
+                    tools:srcCompat="@drawable/logo" />
+
+                <EditText
+                    android:id="@+id/edit_text_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|center_horizontal">
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:ems="10"
+                    android:fontFamily="@font/montserrat"
+                    android:hint="@string/email"
+                    android:inputType="textEmailAddress"
+                    app:layout_constraintBottom_toTopOf="@+id/edit_text_password"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent" />
 
-                    <ImageView
-                        android:id="@+id/imageLogo"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:contentDescription="@string/erasmus_student_network"
-                        android:paddingTop="32dp"
-                        android:paddingBottom="32dp"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toTopOf="@+id/edit_text_email"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintWidth_percent="0.7"
-                        tools:srcCompat="@drawable/logo" />
+                <EditText
+                    android:id="@+id/edit_text_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:ems="10"
+                    android:fontFamily="@font/montserrat"
+                    android:hint="@string/password"
+                    android:inputType="textPassword"
+                    android:nextFocusDown="@id/button_login"
+                    android:nextFocusForward="@id/button_login"
+                    app:layout_constraintBottom_toTopOf="@+id/text_link_reset"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
 
-                    <EditText
-                        android:id="@+id/edit_text_email"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:ems="10"
-                        android:fontFamily="@font/montserrat"
-                        android:hint="@string/email"
-                        android:inputType="textEmailAddress"
-                        app:layout_constraintBottom_toTopOf="@+id/edit_text_password"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"/>
+                <TextView
+                    android:id="@+id/text_link_reset"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="24dp"
+                    android:fontFamily="@font/montserrat"
+                    android:text="@string/forgot_password"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                    app:layout_constraintBottom_toTopOf="@+id/button_login"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
-                    <EditText
-                        android:id="@+id/edit_text_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="8dp"
-                        android:ems="10"
-                        android:fontFamily="@font/montserrat"
-                        android:hint="@string/password"
-                        android:inputType="textPassword"
-                        android:nextFocusDown="@id/button_login"
-                        android:nextFocusForward="@id/button_login"
-                        app:layout_constraintBottom_toTopOf="@+id/text_link_reset"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"/>
+                <Button
+                    android:id="@+id/button_login"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="12dp"
+                    android:fontFamily="@font/montserrat"
+                    android:nextFocusUp="@id/edit_text_password"
+                    android:text="@string/login"
+                    android:textColor="@color/whiteButtonText"
+                    app:layout_constraintBottom_toTopOf="@+id/textView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
 
-                    <TextView
-                        android:id="@+id/text_link_reset"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="24dp"
-                        android:fontFamily="@font/montserrat"
-                        android:text="@string/forgot_password"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                        app:layout_constraintBottom_toTopOf="@+id/button_login"
-                        app:layout_constraintEnd_toEndOf="parent" />
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:autoLink="web"
+                    android:fontFamily="@font/montserrat"
+                    android:text="@string/no_account"
+                    app:layout_constraintBottom_toTopOf="@+id/text_link_create"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
 
-                    <Button
-                        android:id="@+id/button_login"
-                        style="@style/Widget.AppCompat.Button.Colored"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="12dp"
-                        android:fontFamily="@font/montserrat"
-                        android:nextFocusUp="@id/edit_text_password"
-                        android:text="@string/login"
-                        android:textColor="@color/whiteButtonText"
-                        app:layout_constraintBottom_toTopOf="@+id/textView"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <TextView
-                        android:id="@+id/textView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:autoLink="web"
-                        android:fontFamily="@font/montserrat"
-                        android:text="@string/no_account"
-                        app:layout_constraintBottom_toTopOf="@+id/text_link_create"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-
-                    <TextView
-                        android:id="@+id/text_link_create"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="16dp"
-                        android:fontFamily="@font/montserrat"
-                        android:text="@string/create_account"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent" />
-                </android.support.constraint.ConstraintLayout>
-            </ScrollView>
+                <TextView
+                    android:id="@+id/text_link_create"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:fontFamily="@font/montserrat"
+                    android:text="@string/create_account"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+        </ScrollView>
 
     </LinearLayout>
 
