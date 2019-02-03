@@ -128,10 +128,11 @@
                     android:layout_marginBottom="8dp"
                     android:drawableStart="@drawable/ic_orange_recommend"
                     android:drawablePadding="4dp"
-                    android:gravity="center_vertical"
                     android:fontFamily="@font/montserrat"
+                    android:gravity="center_vertical"
                     android:text="@string/share"
-                    android:textColorLink="?android:attr/textColorTertiary" />
+                    android:textColorLink="?android:attr/textColorTertiary"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/text_link_contact"
