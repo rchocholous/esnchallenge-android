@@ -139,7 +139,6 @@ public class ProfileFragment extends Fragment implements ProfileChangedListener 
         buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                ProfileFragment.profileData = null;
                 ((MainActivity)getActivity()).setAccessToken(null);
                 ((MainActivity)getActivity()).cleanProfileData();
                 showLayout(LayoutEnum.LOGIN);
@@ -203,11 +202,6 @@ public class ProfileFragment extends Fragment implements ProfileChangedListener 
         this.facade.cancelRequests();
     }
 
-//    public void notifyFragmentLoaded() {
-//        loadFacade();
-////        callProfileEndpoint();
-//    }
-
     private void callAccessTokenEndpoint() {
         final String email = fieldEmail.getText().toString();
         final String password = fieldPassword.getText().toString();
@@ -224,7 +218,6 @@ public class ProfileFragment extends Fragment implements ProfileChangedListener 
                                 } catch (Exception ignored) { }
                             }
 
-//                            callProfileEndpoint();
                             ((MainActivity)getActivity()).loadProfileData();
                         }
 
@@ -241,34 +234,6 @@ public class ProfileFragment extends Fragment implements ProfileChangedListener 
         }
 
     }
-
-//    private void callProfileEndpoint() {
-//        this.facade.sendGetProfile(((MainActivity) getActivity()).getAccessToken(),
-//                new VolleyCallback<ProfileData>() {
-//                    @Override
-//                    public void onSuccess(ProfileData result) {
-//                        ProfileFragment.profileData = result;
-//                        ProfileFragment.this.populateProfileData(ProfileFragment.profileData);
-//                        showLayout(LayoutEnum.PROFILE);
-//                        Toast.makeText(getContext(),"Successfully logged in.",Toast.LENGTH_LONG).show();
-//                    }
-//
-//                    @Override
-//                    public void onError(String result) throws Exception {
-//                        showLayout(LayoutEnum.LOGIN);
-//                        Toast.makeText(getContext(), "Failed to load profile data.", Toast.LENGTH_LONG).show();
-//                    }
-//                }
-//        );
-//
-//    }
-
-//    public void actionAutoLogin() {
-//        /*
-//        if( token != null) loadProfile()
-//         */
-//    }
-
 
     private void populateProfileData(ProfileData profile) {
         if(profile != null) {

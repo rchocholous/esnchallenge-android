@@ -32,8 +32,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-    public String accessToken;
-
     private final Fragment scoresFragment = new HighScoresFragment();
     private final Fragment mapFragment = new MapFragment();
     private final Fragment profileFragment = new ProfileFragment();
@@ -41,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 //    private Fragment activeFragment;
     private ViewPager viewpager;
 
-    // Global data
     private BackendFacade facade;
+    // Global data
     private ProfileData profile;
 
     @Override
@@ -63,11 +61,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         menuItemToSelect.setChecked(true);
         onNavigationItemSelected(menuItemToSelect);
 
-//        activeFragment = mapFragment;
-//        if (savedInstanceState != null) {
-//            //Restore the fragment's instance
-//            activeFragment = getSupportFragmentManager().getFragment(savedInstanceState, "savedMapFragment");
-//        }
         loadProfileData();
     }
 
@@ -75,6 +68,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 //        getSupportFragmentManager().putFragment(outState,"savedMapFragment", activeFragment);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.facade.cancelRequests();
     }
 
     private void setupViewPager() {
@@ -95,8 +94,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 viewpager.setCurrentItem(0);
                 break;
             case R.id.navigation_map:
-//                ((ProfileFragment)profileFragment).notifyFragmentLoaded();
-//                ((MapFragment)mapFragment).notifyFragmentLoaded(this.profile);
                 viewpager.setCurrentItem(1);
                 break;
 
@@ -171,13 +168,11 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public String getAccessToken() {
         SharedPreferences preferences = getSharedPreferences("ESNChallengePreferences", MODE_PRIVATE);
         return preferences.getString("ACCESS_TOKEN",null);
-        //return accessToken;
     }
 
     public void setAccessToken(String accessToken) {
         SharedPreferences preferences = getSharedPreferences("ESNChallengePreferences", MODE_PRIVATE);
         preferences.edit().putString("ACCESS_TOKEN", accessToken).commit();
-        //this.accessToken = accessToken;
     }
 
     public ProfileData getProfile() {

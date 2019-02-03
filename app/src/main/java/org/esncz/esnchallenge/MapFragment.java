@@ -170,15 +170,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Profile
         }
     }
 
-    public void notifyFragmentLoaded(ProfileData profile) {
-        if(profile != null) {
-            updateLocationsCheckedState(profile.getCheckedLocations());
-        }
-        if(facade != null) {
-            callLocationsEndpoint();
-        }
-    }
-
     private void updateLocationsCheckedState(List<LocationPoint> checkedLocations) {
         if(locations != null) {
             if(checkedLocations != null) {
@@ -199,16 +190,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Profile
             locations.get(location.getTitle()).setCircle(mMap.addCircle(location.buildCircleOptions(getResources())));
         }
     }
-
-//    private void updateMapLocations() {
-//        if(locations != null &&  !locations.isEmpty() && mMap != null) {
-//            updateLocationsCheckedState();
-//
-//            for(LocationPoint location : locations.values()) {
-//                addLocationToMap(location);
-//            }
-//        }
-//    }
 
     @Override
     public void updateProfile(ProfileData data) {
@@ -239,7 +220,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Profile
                             }
                         }
                         locationsCount = locations.size();
-//                        updateMapLocations();
                         ((MainActivity)getActivity()).notifyProfileChanged();
                     }
 
@@ -292,7 +272,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Profile
                             //TODO: locations.get(list.get(0).getTitle()).getCircle().setFillColor(0x7FA0A500);// Only if is inside range
                             checked = true;
                             callLocationCheckEndpoint(location);
-//                            showLocationCheckDialog();
                         } else {
                             break;
                         }
@@ -398,9 +377,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Profile
                         public void onSuccess(JSONObject result) throws JSONException {
                             if(location.check()) {
                                 ((MainActivity)getActivity()).addCheckedLocation(location);
-                                //TODO: MainActivity add method: addCheckedLocation
-//                                ((MainActivity)getActivity()).getProfile().getCheckedLocations().add()
-//                                ProfileFragment.profileData.getCheckedLocations().add(location);
                             }
                             showProgressBar(false);
                             showLocationCheckDialog(result.getString("message"));
