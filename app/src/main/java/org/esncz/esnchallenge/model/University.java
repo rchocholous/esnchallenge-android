@@ -1,5 +1,7 @@
 package org.esncz.esnchallenge.model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
@@ -8,7 +10,9 @@ import java.io.Serializable;
  */
 public class University implements Serializable {
     private String name;
+    @SerializedName("section_short")
     private String sectionShort;
+    @SerializedName("section_long")
     private String sectionLong;
 
     public University() {
