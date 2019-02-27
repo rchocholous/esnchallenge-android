@@ -235,7 +235,7 @@ public class ProfileFragment extends Fragment implements ProfileChangedListener 
     }
 
     private void populateProfileData(ProfileData profile) {
-        if(profile != null) {
+        if(profile != null && locationsListView != null) {// They are initialized at same time, so we dont need to test all of them
             textName.setText(String.format("Howdy %s!", profile.getFirstname()));
             textEmail.setText(profile.getEmail());
             textFirstName.setText(profile.getFirstname());

@@ -27,7 +27,7 @@ public class LocationPoint implements Serializable, Parcelable {
     private Double lat;
     private Double lng;
 
-    private int radius = 100;//meters
+    private int radius = 60;//meters
     private boolean checked = false;
 
     private Marker marker;

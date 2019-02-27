@@ -89,7 +89,7 @@ public class HighScoresFragment extends Fragment {
         }
         final ListView scoreListView = (ListView) this.getActivity().findViewById(R.id.listview_scores);
 
-        this.facade.sendGetHighScores(10,0,
+        this.facade.sendGetHighScores(100,0,
                 new VolleyCallback<HighScore[]>() {
                     @Override
                     public void onSuccess(HighScore[] result) throws JSONException {
