@@ -28,27 +28,30 @@ public class LocationPoint implements Serializable, Parcelable {
     private Double lng;
 
     private int radius = 60;//meters
+    private String description;
+    private ColorRGBA color;
     private boolean checked = false;
 
-    private Marker marker;
-    private Circle circle;
-    private Resources resources;
+    private transient Marker marker;
+    private transient Circle circle;
+    private transient Resources resources;
 
     public LocationPoint() {
 
     }
 
-    public LocationPoint(Long id, String title, String type, Double lat, Double lng, boolean checked) {
-        this(id, title, type, lat, lng);
+    public LocationPoint(Long id, String title, String type, Double lat, Double lng, String description, boolean checked) {
+        this(id, title, type, lat, lng, description);
         this.checked = checked;
     }
 
-    public LocationPoint(Long id, String title, String type, Double lat, Double lng) {
+    public LocationPoint(Long id, String title, String type, Double lat, Double lng, String description) {
         this.id = id;
         this.title = title;
         this.type = type;
         this.lat = lat;
         this.lng = lng;
+        this.description = description;
     }
 
 
@@ -118,21 +121,37 @@ public class LocationPoint implements Serializable, Parcelable {
     };
 
     public MarkerOptions buildMarkerOptions() {
-        return new MarkerOptions().position(new LatLng(lat,lng)).title(title).snippet(type);
+        String snippet = type;
+        if(description != null && !description.isEmpty()) {
+            snippet += "\n\n" + description;
+        }
+        return new MarkerOptions().position(new LatLng(lat,lng)).title(title).snippet(snippet);
+    }
+
+    public int getFillColor(boolean checked) {
+        if(!checked) {
+            return color != null ? color.asColorInt() : ResourcesCompat.getColor(this.resources, R.color.orangeLightTransparentColor, null);
+        } else {
+            return ResourcesCompat.getColor(this.resources, R.color.colorAccentTransparent, null);
+        }
+    }
+
+    public int getStrokeColor(boolean checked) {
+        if(!checked) {
+            return color != null ? color.asSolidColorInt() : ResourcesCompat.getColor(this.resources, R.color.orangeColor, null);
+        } else {
+            return color != null ? color.asSolidColorInt() : ResourcesCompat.getColor(this.resources, R.color.orangeColor, null);
+        }
     }
 
     public CircleOptions buildCircleOptions(Resources resources) {
         this.resources = resources;
 
-        int fillColor = ResourcesCompat.getColor(this.resources, R.color.orangeLightTransparentColor, null);
-        if(checked) {
-            fillColor = ResourcesCompat.getColor(this.resources, R.color.colorAccentTransparent, null);
-        }
         return new CircleOptions()
                 .center(new LatLng(lat,lng))
                 .radius(this.radius)
-                .fillColor(fillColor)
-                .strokeColor(ResourcesCompat.getColor(this.resources, R.color.orangeColor, null))
+                .fillColor(getFillColor(checked))
+                .strokeColor(getStrokeColor(checked))
                 .strokeWidth(10);
     }
 
@@ -203,6 +222,22 @@ public class LocationPoint implements Serializable, Parcelable {
         this.radius = radius;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ColorRGBA getColor() {
+        return color;
+    }
+
+    public void setColor(ColorRGBA color) {
+        this.color = color;
+    }
+
     public Marker getMarker() {
         return marker;
     }
@@ -223,7 +258,8 @@ public class LocationPoint implements Serializable, Parcelable {
         if (!this.checked) {
             this.checked = true;
             if (circle != null) {
-                circle.setFillColor(ResourcesCompat.getColor(this.resources, R.color.colorAccentTransparent, null));
+                circle.setFillColor(getFillColor(this.checked));
+                circle.setStrokeColor(getStrokeColor(this.checked));
             }
             return true;
         } else {
@@ -235,7 +271,8 @@ public class LocationPoint implements Serializable, Parcelable {
         if (this.checked) {
             this.checked = false;
             if (circle != null) {
-                circle.setFillColor(ResourcesCompat.getColor(this.resources, R.color.orangeLightTransparentColor, null));
+                circle.setFillColor(getFillColor(this.checked));
+                circle.setStrokeColor(getStrokeColor(this.checked));
             }
             return true;
         } else {
